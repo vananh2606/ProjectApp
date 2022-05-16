@@ -1,0 +1,1 @@
+export const USER_STATE_CHAGE = 'USER_STATE_CHANGE'
