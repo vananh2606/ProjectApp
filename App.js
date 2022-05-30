@@ -1,19 +1,16 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import React, { Component } from 'react'
-import { LogBox } from 'react-native';
+import React, { Component, useState, useEffect } from 'react';
 
-import { Provider } from 'react-redux'
-import { createStore, applyMiddleware } from 'redux'
-import rootReducer from './redux/reducers'
-import thunk from 'redux-thunk'
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import rootReducer from './redux/reducers';
+import thunk from 'redux-thunk';
 
-const store = createStore(rootReducer, applyMiddleware(thunk))
-
-// import * as firebase from 'firebase';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const firebaseConfig = {
   apiKey: "AIzaSyBHab1xCK7Tn2yb-ngTEpX52o2j4S2HYUQ",
@@ -27,81 +24,73 @@ const firebaseConfig = {
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig)
-}
+};
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import LandingScreen from './components/auth/Landing';
-import RegisterScreen from './components/auth/Register';
-import LoginScreen from './components/auth/Login';
-import MainScreen from './components/Main';
-import AddScreen from './components/main/Add';
-import SaveScreen from './components/main/Save';
-import CommentScreen from './components/main/Comment';
+import LandingScreen from './screens/LandingScreen';
+import MainScreen from './MainNavigation';
+import SaveScreen from './screens/SaveScreen';
+import CommentsScreen from './screens/CommentsScreen';
+import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import AddScreen from './screens/AddScreen';
+import OtherProfileScreen from './screens/OtherProfileScreen';
 
 const Stack = createStackNavigator();
 
-export class App extends Component {
-  constructor(props) {
-    super()
-    this.state = {
-      loaded: false,
-    }
-  }
+const screenOptions = {
+  headerShown: false,
+};
 
-  componentDidMount() {
-    firebase.auth().onAuthStateChanged((user) => {
+const App = () => {
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = firebase.auth().onAuthStateChanged(user => {
       if (!user) {
-        this.setState({
-          loggedIn: false,
-          loaded: true,
-        })
+        setSignedIn(false);
       } else {
-        this.setState({
-          loggedIn: true,
-          loaded: true,
-        })
+        setSignedIn(true);
       }
-    })
-  }
+    });
 
-  render() {
-    const { loggedIn, loaded } = this.state;
+    return unsubscribe;
+  }, []);
 
-    if (!loaded) {
-      return (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <Text>Loading</Text>
-        </View>
-      )
-    }
+  return (
+    <>
+      {
+        signedIn ?
+          <Provider store={store}>
+            <NavigationContainer>
+              <Stack.Navigator
+                initialRouteName="Main"
+                screenOptions={screenOptions}
+              >
+                <Stack.Screen name="Main" component={MainScreen} />
+                <Stack.Screen name="OtherProfile" component={OtherProfileScreen} />
+                <Stack.Screen name="Add" component={AddScreen} />
+                <Stack.Screen name="Save" component={SaveScreen} />
+                <Stack.Screen name="Comments" component={CommentsScreen} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </Provider>
+          :
+          <NavigationContainer>
+            <Stack.Navigator 
+            initialRouteName="Landing"
+            screenOptions={screenOptions}
+            >
+              <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="Register" component={RegisterScreen} />
+              <Stack.Screen name="Login" component={LoginScreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+      }
+    </>
+  );
+};
 
-    if (!loggedIn) {
-      return (
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="Landing">
-            <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      )
-    }
-
-    return (
-      <Provider store={store}>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="Main">
-            <Stack.Screen name="Main" component={MainScreen} />
-            <Stack.Screen name="Add" component={AddScreen} navigation={this.props.navigation} />
-            <Stack.Screen name="Save" component={SaveScreen} navigation={this.props.navigation} />
-            <Stack.Screen name="Comment" component={CommentScreen} navigation={this.props.navigation} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </Provider>
-    )
-  }
-}
-
-export default App
+export default App;

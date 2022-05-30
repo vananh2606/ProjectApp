@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { TextInput, View, Button, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import firebase from 'firebase';
 require("firebase/firestore")
@@ -7,8 +8,8 @@ require("firebase/firebase-storage")
 
 export default function Save(props) {
     // console.log(props.route.params.image);
-
     const [caption, setCaption] = useState("");
+    const navigation = useNavigation();
 
     const uploadImage = async () => {
         const uri = props.route.params.image;

@@ -1,23 +1,22 @@
-import React, { Component } from 'react'
-import { View, Text } from 'react-native'
+import React, { Component } from 'react';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import MaterialCommuntiyIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import MaterialCommuntiyIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import firebase from 'firebase';
 
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { fetchUser, fetchUserPosts, fetchUserFollowing, clearData } from '../redux/actions/index'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { fetchUser, fetchUserPosts, fetchUserFollowing, clearData } from './redux/actions/index';
 
-import FeedScreen from './main/Feed';
-import ProfileScreen from './main/Profile';
-import SearchScreen from './main/Search';
+import FeedScreen from './screens/FeedScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import SearchScreen from './screens/SearchScreen';
 
 const Tab = createMaterialBottomTabNavigator();
 
 const EmptyScreen = () => {
     return (null)
-}
+};
 
 export class Main extends Component {
     componentDidMount() {
@@ -29,14 +28,26 @@ export class Main extends Component {
 
     render() {
         return (
-            <Tab.Navigator initialRouteName='Feed' labeled={false}>
+            <Tab.Navigator
+                initialRouteName='Feed'
+                labeled={false}
+                activeColor="#000000"
+                inactiveColor="#808080"
+                barStyle={{ backgroundColor: '#ffffff' }}
+            >
                 <Tab.Screen name="Feed" component={FeedScreen}
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommuntiyIcons name="home" color={color} size={26} />
                         ),
                     }} />
-                <Tab.Screen name="Search" component={SearchScreen} navigation={this.props.navigation}
+                <Tab.Screen name="Search" component={SearchScreen}
+                    listeners={({ navigation }) => ({
+                        tabPress: event => {
+                            event.preventDefault();
+                            navigation.navigate("Search", { uid: firebase.auth().currentUser.uid })
+                        }
+                    })}
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommuntiyIcons name="magnify" color={color} size={26} />
@@ -69,13 +80,13 @@ export class Main extends Component {
             </Tab.Navigator>
         )
     }
-}
+};
 
 const mapStateToProps = (store) => {
     return {
         currentUser: store.userState.currentUser,
     };
-}
+};
 
 const mapDispatchProps = (dispatch) => bindActionCreators({ fetchUser, fetchUserPosts, fetchUserFollowing, clearData }, dispatch);
 

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, FlatList, Button, TextInput } from 'react-native'
+import { useNavigation } from '@react-navigation/native';
 
 import firebase from 'firebase'
 require('firebase/firestore')
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { fetchUsersData } from '../../redux/actions'
+import { fetchUsersData } from '../redux/actions'
 
 function Comment(props) {
     const [comments, setComments] = useState([])
     const [postId, setPostId] = useState("")
     const [text, setText] = useState("")
+    const navigation = useNavigation();
 
     useEffect(() => {
 
