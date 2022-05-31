@@ -2,8 +2,8 @@ import { View, Text, StyleSheet } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import IonicIcon from 'react-native-vector-icons/Ionicons'
 
-const Header = () => {
-    const navigation = useNavigation()
+const HeaderCmt = () => {
+    const navigation = useNavigation();
 
     return (
         <View style={styles.container}>
@@ -24,7 +24,7 @@ const Header = () => {
             />
         </View>
     )
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -36,6 +36,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     }
-})
+});
 
-export default Header
+export default HeaderCmt;

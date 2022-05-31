@@ -1,34 +1,42 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Dimensions, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import IonicIcon from 'react-native-vector-icons/Ionicons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 
-const PostHeader = ({ post }) => (
-    <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        margin: 5,
-        alignItems: 'center',
-    }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Image
-                style={styles.story}
-                source={{ uri: "http://placeimg.com/640/480/food" }}
-            />
-            <Text style={{ margin: 5, fontWeight: '700' }}>
-                {post.user.name}
-            </Text>
-        </View>
+const PostHeader = ({ post }) => {
+    const navigation = useNavigation();
 
-        <EntypoIcon
-            name='dots-three-horizontal'
-            size={16}
-            color='#000'
+    return (
+        <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            margin: 5,
+            alignItems: 'center',
+        }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image
+                    style={styles.story}
+                    source={{ uri: "http://placeimg.com/640/480/food" }}
+                />
+                <Pressable
+                    onPress={() => navigation.navigate('OtherProfile', { uid: post?.user?.uid })}
+                >
+                    <Text style={{ margin: 5, fontWeight: '700' }}>
+                        {post?.user?.name}
+                    </Text>
+                </Pressable>
+            </View>
+
+            <EntypoIcon
+                name='dots-three-horizontal'
+                size={16}
+                color='#000'
             // onPress={() => navigation.push('NewPost')}
-        />
-    </View>
-)
+            />
+        </View>
+    )
+};
 
 const PostImage = ({ post }) => {
     // const [currentImg, setCurrentImg] = useState(1)

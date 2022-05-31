@@ -1,20 +1,18 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRoute } from '@react-navigation/native';
 
+import firebase from 'firebase';
 import { connect } from 'react-redux';
 
 import HeaderSearch from '../components/header/HeaderSearch';
 import ListSearch from '../components/search/ListSearch';
 
 const SearchScreen = (props) => {
-    const route = useRoute();
-
     return (
         <SafeAreaView style={styles.container}>
-            <HeaderSearch name={props?.currentUser?.name} />
-            <ListSearch currentId={route.params?.uid} following={props?.following} />
+            <HeaderSearch withGoBack={false} name={props?.currentUser?.name} />
+            <ListSearch currentId={firebase.auth().currentUser.uid} following={props?.following} />
         </SafeAreaView>
     )
 };

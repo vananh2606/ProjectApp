@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { TextInput } from 'react-native-paper';
@@ -6,6 +7,7 @@ import * as Yup from 'yup';
 import firebase from 'firebase';
 
 const LoginForm = () => {
+    const [hidePass, setHidePass] = useState(true);
     const navigation = useNavigation();
 
     const LoginFormSchema = Yup.object().shape({
@@ -59,12 +61,24 @@ const LoginForm = () => {
                                 placeholder='Nhập mật khẩu của bạn'
                                 autoCapitalize='none'
                                 autoCorrect={false}
-                                secureTextEntry={true}
+                                secureTextEntry={hidePass}
                                 textContentType='password'
                                 onChangeText={handleChange('password')}
                                 onBlur={handleBlur('password')}
                                 value={values.password}
                                 style={{ marginBottom: 5, }}
+                                right={
+                                    hidePass ?
+                                        <TextInput.Icon
+                                            name="eye"
+                                            onPress={() => setHidePass(false)}
+                                        />
+                                        :
+                                        <TextInput.Icon
+                                            name="eye-off"
+                                            onPress={() => setHidePass(true)}
+                                        />
+                                }
                             />
                             {((errors.password === 'Mật khẩu phải có ít nhất 6 kí tự' || errors.password === 'Mật khẩu là bắt buộc') && touched.password) &&
                                 <Text style={styles.textError}>{errors.password}</Text>
@@ -72,7 +86,7 @@ const LoginForm = () => {
                         </View>
 
                         <View style={{ alignItems: 'flex-end', marginBottom: 30 }}>
-                            <Text style={{ color: '#663399' }}>Forgot password?</Text>
+                            <Text style={{ color: '#663399' }}>Quên mặt khẩu?</Text>
                         </View>
 
                         <Pressable
@@ -83,13 +97,13 @@ const LoginForm = () => {
                             }}
                             disabled={!isValid}
                         >
-                            <Text style={styles.buttonText}>Log In</Text>
+                            <Text style={styles.buttonText}>Đăng nhập</Text>
                         </Pressable>
 
                         <View style={styles.signupContainer}>
-                            <Text>Don't have an account? </Text>
+                            <Text>Bạn chưa có tài khoản? </Text>
                             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                                <Text style={{ color: '#663399' }}>Sign Up</Text>
+                                <Text style={{ color: '#663399' }}>Đăng ký</Text>
                             </TouchableOpacity>
                         </View>
                     </KeyboardAvoidingView>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRoute } from '@react-navigation/native';
 
 import firebase from 'firebase';
 require('firebase/firestore');
@@ -21,14 +20,10 @@ const ProfileScreen = (props) => {
         setUserPosts(posts)
     }, [])
 
-    // const onLogout = () => {
-    //     firebase.auth().signOut();
-    // }
-
     return (
         <SafeAreaView style={styles.container}>
             <Header />
-            <Info user={user} checkFollowing={[]} />
+            <Info user={user} checkFollowing={props?.following} postsQuantity={userPosts.length} />
             <ListPost userPosts={userPosts} />
         </SafeAreaView>
     )
@@ -44,6 +39,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
     currentUser: store.userState.currentUser,
     posts: store.userState.posts,
+    following: store.userState.following
 });
 
 export default connect(mapStateToProps, null)(ProfileScreen);

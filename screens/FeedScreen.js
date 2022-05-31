@@ -15,14 +15,14 @@ function Feed(props) {
         if (props.userFollowingLoaded === props.following.length) {
             for (let i = 0; i < props.following.length; i++) {
                 const user = props.users.find(el => el.uid === props.following[i]);
-                if (user != undefined) {
+                if (user !== undefined) {
                     posts = [...posts, ...user.posts]
                 }
             }
 
             posts.sort((x, y) => x.creation - y.creation);
 
-            setPosts(posts)
+            setPosts(posts);
         }
     }, [props.userFollowingLoaded])
 

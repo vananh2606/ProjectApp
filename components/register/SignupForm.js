@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { TextInput } from 'react-native-paper';
@@ -6,7 +7,8 @@ import * as Yup from 'yup';
 import firebase from 'firebase';
 
 const SignupForm = () => {
-    const navigation = useNavigation()
+    const [hidePass, setHidePass] = useState(true);
+    const navigation = useNavigation();
 
     const SignupFormSchema = Yup.object().shape({
         email: Yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
@@ -14,7 +16,7 @@ const SignupForm = () => {
         password: Yup.string()
             .required('Mật khẩu là bắt buộc')
             .min(6, 'Mật khẩu phải có ít nhất 6 kí tự')
-    })
+    });
 
     return (
         <View style={styles.wrapper}>
@@ -44,7 +46,7 @@ const SignupForm = () => {
                             <TextInput
                                 mode='outlined'
                                 label='Tên người dùng'
-                                error={(errors.username === 'Tên người dùng là bắt buộc' || errors.username === 'Your password has to have at least 2 characters') && touched.username}
+                                error={(errors.username === 'Tên người dùng là bắt buộc' || errors.username === 'Tên người dùng phải có ít nhất 2 kí tự') && touched.username}
                                 placeholderTextColor='#444'
                                 placeholder='Nhập tên người dùng của bạn'
                                 autoCapitalize='none'
@@ -88,12 +90,24 @@ const SignupForm = () => {
                                 placeholderTextColor='#444'
                                 placeholder='Nhập mật khẩu của bạn'
                                 autoCapitalize='none'
-                                secureTextEntry={true}
+                                secureTextEntry={hidePass}
                                 textContentType='password'
                                 onChangeText={handleChange('password')}
                                 onBlur={handleBlur('password')}
                                 value={values.password}
                                 style={{ marginBottom: 5, }}
+                                right={
+                                    hidePass ?
+                                        <TextInput.Icon
+                                            name="eye"
+                                            onPress={() => setHidePass(false)}
+                                        />
+                                        :
+                                        <TextInput.Icon
+                                            name="eye-off"
+                                            onPress={() => setHidePass(true)}
+                                        />
+                                }
                             />
                             {((errors.password === 'Mật khẩu phải có ít nhất 6 kí tự' || errors.password === 'Mật khẩu là bắt buộc') && touched.password) &&
                                 <Text style={styles.textError}>{errors.password}</Text>
@@ -105,13 +119,13 @@ const SignupForm = () => {
                             style={styles.button(isValid)}
                             onPress={handleSubmit}
                         >
-                            <Text style={styles.buttonText}>Sign Up</Text>
+                            <Text style={styles.buttonText}>Đăng ký</Text>
                         </Pressable>
 
                         <View style={styles.signupContainer}>
-                            <Text>Already have an account? </Text>
+                            <Text>Bạn đã có tài khoản? </Text>
                             <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Text style={{ color: '#6BB0F5' }}>Log In</Text>
+                                <Text style={{ color: '#6BB0F5' }}>Đăng nhập</Text>
                             </TouchableOpacity>
                         </View>
                     </KeyboardAvoidingView>

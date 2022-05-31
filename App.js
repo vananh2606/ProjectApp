@@ -1,5 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
@@ -29,14 +28,13 @@ if (firebase.apps.length === 0) {
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import LandingScreen from './screens/LandingScreen';
 import MainScreen from './MainNavigation';
 import SaveScreen from './screens/SaveScreen';
 import CommentsScreen from './screens/CommentsScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import AddScreen from './screens/AddScreen';
-import OtherProfileScreen from './screens/OtherProfileScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -48,13 +46,14 @@ const App = () => {
   const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged(user => {
-      if (!user) {
-        setSignedIn(false);
-      } else {
-        setSignedIn(true);
-      }
-    });
+    const unsubscribe =
+      firebase.auth().onAuthStateChanged(user => {
+        if (!user) {
+          setSignedIn(false);
+        } else {
+          setSignedIn(true);
+        }
+      });
 
     return unsubscribe;
   }, []);
@@ -69,23 +68,36 @@ const App = () => {
                 initialRouteName="Main"
                 screenOptions={screenOptions}
               >
-                <Stack.Screen name="Main" component={MainScreen} />
-                <Stack.Screen name="OtherProfile" component={OtherProfileScreen} />
-                <Stack.Screen name="Add" component={AddScreen} />
-                <Stack.Screen name="Save" component={SaveScreen} />
-                <Stack.Screen name="Comments" component={CommentsScreen} />
+                <Stack.Screen
+                  name="Main"
+                  component={MainScreen} />
+                <Stack.Screen
+                  name="EditProfile"
+                  component={EditProfileScreen} />
+                <Stack.Screen
+                  name="Add"
+                  component={AddScreen} />
+                <Stack.Screen
+                  name="Save"
+                  component={SaveScreen} />
+                <Stack.Screen
+                  name="Comments"
+                  component={CommentsScreen} />
               </Stack.Navigator>
             </NavigationContainer>
           </Provider>
           :
           <NavigationContainer>
-            <Stack.Navigator 
-            initialRouteName="Landing"
-            screenOptions={screenOptions}
+            <Stack.Navigator
+              initialRouteName="Login"
+              screenOptions={screenOptions}
             >
-              <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
-              <Stack.Screen name="Register" component={RegisterScreen} />
-              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen
+                name="Register"
+                component={RegisterScreen} />
+              <Stack.Screen
+                name="Login"
+                component={LoginScreen} />
             </Stack.Navigator>
           </NavigationContainer>
       }

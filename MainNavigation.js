@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import MaterialCommuntiyIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -11,14 +12,53 @@ import { fetchUser, fetchUserPosts, fetchUserFollowing, clearData } from './redu
 import FeedScreen from './screens/FeedScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import SearchScreen from './screens/SearchScreen';
+import OtherProfileScreen from './screens/OtherProfileScreen';
 
+const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
+
+const screenOptions = {
+    headerShown: false,
+};
 
 const EmptyScreen = () => {
     return (null)
 };
 
-export class Main extends Component {
+const FeedStack = () => (
+    <Stack.Navigator
+        initialRouteName='Feed'
+        screenOptions={screenOptions}
+    >
+        <Stack.Screen
+            name='Feed'
+            component={FeedScreen}
+        />
+        <Stack.Screen
+            name='OtherProfile'
+            component={OtherProfileScreen}
+        />
+    </Stack.Navigator>
+);
+
+const SearchStack = (props) => (
+    <Stack.Navigator
+        initialRouteName='Search'
+        screenOptions={screenOptions}
+    >
+        <Stack.Screen
+            name='Search'
+            component={SearchScreen}
+        />
+        <Stack.Screen
+            name='OtherProfile'
+            component={OtherProfileScreen}
+        />
+    </Stack.Navigator>
+);
+
+
+class Main extends Component {
     componentDidMount() {
         this.props.clearData();
         this.props.fetchUser();
@@ -29,25 +69,20 @@ export class Main extends Component {
     render() {
         return (
             <Tab.Navigator
-                initialRouteName='Feed'
+                initialRouteName='FeedStack'
                 labeled={false}
                 activeColor="#000000"
                 inactiveColor="#808080"
                 barStyle={{ backgroundColor: '#ffffff' }}
             >
-                <Tab.Screen name="Feed" component={FeedScreen}
+                <Tab.Screen name='FeedStack' component={FeedStack}
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommuntiyIcons name="home" color={color} size={26} />
                         ),
                     }} />
-                <Tab.Screen name="Search" component={SearchScreen}
-                    listeners={({ navigation }) => ({
-                        tabPress: event => {
-                            event.preventDefault();
-                            navigation.navigate("Search", { uid: firebase.auth().currentUser.uid })
-                        }
-                    })}
+
+                <Tab.Screen name="SearchStack" component={SearchStack}
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommuntiyIcons name="magnify" color={color} size={26} />
@@ -57,7 +92,7 @@ export class Main extends Component {
                     listeners={({ navigation }) => ({
                         tabPress: event => {
                             event.preventDefault();
-                            navigation.navigate("Add")
+                            navigation.navigate("Add");
                         }
                     })}
                     options={{
@@ -69,7 +104,7 @@ export class Main extends Component {
                     listeners={({ navigation }) => ({
                         tabPress: event => {
                             event.preventDefault();
-                            navigation.navigate("Profile", { uid: firebase.auth().currentUser.uid })
+                            navigation.navigate("Profile", { uid: firebase.auth().currentUser.uid });
                         }
                     })}
                     options={{

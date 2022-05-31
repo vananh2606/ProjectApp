@@ -16,14 +16,14 @@ const Comment = ({ comment, reply }) => {
                 <Pressable>
                     <Image
                         style={styles.avatar}
-                        source={{ uri: comment.avatar }}
+                        source={{ uri: "http://placeimg.com/640/480/food" }}
                     />
                 </Pressable>
 
                 <View>
                     <Text style={{ width: reply ? windowWidth - 90 : windowWidth - 65 }}>
-                        <Text style={{ fontWeight: '700', marginLeft: 5 }}>{comment.name} </Text>
-                        {comment.comment}
+                        <Text style={{ fontWeight: '700', marginLeft: 5 }}>{comment?.user?.name} </Text>
+                        {comment?.text}
                     </Text>
 
                     <View style={styles.containerFooter}>

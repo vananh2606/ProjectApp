@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import IonicIcon from 'react-native-vector-icons/Ionicons'
+import { View, Text, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import IonicIcon from 'react-native-vector-icons/Ionicons';
 
-const Header = () => {
-    const navigation = useNavigation()
+const HeaderEditProfile = () => {
+    const navigation = useNavigation();
 
     return (
         <View style={styles.container}>
@@ -15,11 +15,11 @@ const Header = () => {
             />
 
             <Text style={{ fontSize: 18, fontWeight: '700' }}>Chỉnh sửa trang cá nhân</Text>
-            
-            <Text style={{ fontWeight: '700', color: 'blue' }}>Xong</Text>
+        
+            <Text>      </Text>
         </View>
     )
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -31,6 +31,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     }
-})
+});
 
-export default Header
+export default HeaderEditProfile;

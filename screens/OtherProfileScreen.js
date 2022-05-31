@@ -7,7 +7,7 @@ import firebase from 'firebase';
 require('firebase/firestore');
 import { connect } from 'react-redux';
 
-import Header from "../components/header/Header";
+import HeaderSearch from '../components/header/HeaderSearch';
 import Info from '../components/profile/Info';
 import ListPost from '../components/profile/ListPost';
 
@@ -29,6 +29,7 @@ const OtherProfileScreen = (props) => {
                     console.log('does not exits')
                 }
             })
+            
         firebase.firestore()
             .collection("posts")
             .doc(route?.params?.uid)
@@ -45,14 +46,10 @@ const OtherProfileScreen = (props) => {
             })
     }, [route?.params?.uid, props?.following])
 
-    // const onLogout = () => {
-    //     firebase.auth().signOut();
-    // }
-
     return (
         <SafeAreaView style={styles.container}>
-            <Header />
-            <Info user={user} checkFollowing={props?.following} />
+            <HeaderSearch withGoBack={true} name={user?.name}  />
+            <Info user={user} checkFollowing={props?.following} postsQuantity={userPosts.length} />
             <ListPost userPosts={userPosts} />
         </SafeAreaView>
     )

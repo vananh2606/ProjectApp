@@ -3,10 +3,25 @@ import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import firebase from 'firebase';
 
-const Info = ({ user, checkFollowing }) => {
+const Info = ({ user, checkFollowing, postsQuantity }) => {
     const [following, setFollowing] = useState(false);
+    const [followUsers, setFollowUsers] = useState([]);
     const navigation = useNavigation();
     const route = useRoute();
+
+    useEffect(() => {
+        firebase.firestore()
+            .collection('users')
+            .get()
+            .then(snapshot => {
+                let users = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    return { id, ...data }
+                })
+                setFollowUsers(users.filter(user => user?.id !== firebase.auth().currentUser.uid && checkFollowing.indexOf(user?.id) === -1));
+            })
+    }, []);
 
     useEffect(() => {
         if (checkFollowing.indexOf(route.params?.uid) !== -1) {
@@ -50,15 +65,15 @@ const Info = ({ user, checkFollowing }) => {
 
                 <View style={{ width: 250, flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, }}>
                     <View style={styles.statisticalContainer}>
-                        <Text style={{ fontWeight: '700', fontSize: 18 }}>55</Text>
+                        <Text style={{ fontWeight: '700', fontSize: 18 }}>{postsQuantity}</Text>
                         <Text>Bài viết</Text>
                     </View>
                     <View style={styles.statisticalContainer}>
-                        <Text style={{ fontWeight: '700', fontSize: 18 }}>55</Text>
+                        <Text style={{ fontWeight: '700', fontSize: 18 }}>{followUsers.length}</Text>
                         <Text>Người theo dõi</Text>
                     </View>
                     <View style={styles.statisticalContainer}>
-                        <Text style={{ fontWeight: '700', fontSize: 18 }}>55</Text>
+                        <Text style={{ fontWeight: '700', fontSize: 18 }}>{checkFollowing.length}</Text>
                         <Text>Đang theo dõi</Text>
                     </View>
                 </View>

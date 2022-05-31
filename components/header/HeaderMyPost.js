@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import IonicIcon from 'react-native-vector-icons/Ionicons'
+import { View, Text, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import IonicIcon from 'react-native-vector-icons/Ionicons';
 
 const HeaderMyPost = ({ name }) => {
-    const navigation = useNavigation()
+    const navigation = useNavigation();
 
     return (
         <View style={styles.container}>
@@ -20,7 +20,7 @@ const HeaderMyPost = ({ name }) => {
             <Text>      </Text>
         </View>
     )
-}
+};
 
 const styles = StyleSheet.create({
     container: {

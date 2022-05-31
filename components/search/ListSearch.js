@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Pressable, Image, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { View, Pressable, Image, Text, StyleSheet, FlatList } from 'react-native';
+import { Searchbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 
@@ -111,13 +111,12 @@ const ListSearch = ({ currentId, following }) => {
 
             <View style={{ marginHorizontal: 12, }}>
                 <View style={{ marginBottom: 12, }}>
-                    <TextInput
+                    <Searchbar
                         placeholder='Tìm kiếm'
                         onChangeText={text => setSearch(text)}
                         style={styles.inputSearch}
                         underlineColor='#ffffff'
                         activeUnderlineColor='#ffffff'
-                        left={<TextInput.Icon name="account-search" />}
                     />
                 </View>
 
