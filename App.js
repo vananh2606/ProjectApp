@@ -35,6 +35,7 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import AddScreen from './screens/AddScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
+import ListLikedScreen from './screens/ListLikedScreen';
 
 const Stack = createStackNavigator();
 
@@ -46,7 +47,7 @@ const App = () => {
   const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
-    const unsubscribe =
+    const unsubscribe = async () => {
       firebase.auth().onAuthStateChanged(user => {
         if (!user) {
           setSignedIn(false);
@@ -54,8 +55,8 @@ const App = () => {
           setSignedIn(true);
         }
       });
-
-    return unsubscribe;
+    }
+    unsubscribe();
   }, []);
 
   return (
@@ -83,6 +84,9 @@ const App = () => {
                 <Stack.Screen
                   name="Comments"
                   component={CommentsScreen} />
+                <Stack.Screen
+                  name="ListLiked"
+                  component={ListLikedScreen} />
               </Stack.Navigator>
             </NavigationContainer>
           </Provider>

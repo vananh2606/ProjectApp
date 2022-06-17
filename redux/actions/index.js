@@ -1,32 +1,32 @@
 import { USER_STATE_CHANGE, USER_POSTS_STATE_CHANGE, USER_FOLLOWING_STATE_CHANGE, USERS_DATA_STATE_CHANGE, USERS_POSTS_STATE_CHANGE, CLEAR_DATA } from "../constants/index";
 import firebase from "firebase";
-require('firebase/firestore')
+require('firebase/firestore');
 
-export function clearData() {
-    return ((dispatch) => {
-        dispatch({ type: CLEAR_DATA })
-    })
-}
+export const clearData = () => {
+    return (dispatch => {
+        dispatch({ type: CLEAR_DATA });
+    });
+};
 
-export function fetchUser() {
-    return ((dispatch) => {
+export const fetchUser =() => {
+    return (dispatch => {
         firebase.firestore()
             .collection("users")
             .doc(firebase.auth().currentUser.uid)
             .get()
             .then((snapshot) => {
                 if (snapshot.exists) {
-                    dispatch({ type: USER_STATE_CHANGE, currentUser: snapshot.data() })
+                    dispatch({ type: USER_STATE_CHANGE, currentUser: snapshot.data() });
                 }
                 else {
                     console.log('does not exits')
                 }
             })
-    })
-}
+    });
+};
 
-export function fetchUserPosts() {
-    return ((dispatch) => {
+export const fetchUserPosts = () => {
+    return (dispatch => {
         firebase.firestore()
             .collection("posts")
             .doc(firebase.auth().currentUser.uid)
@@ -39,14 +39,14 @@ export function fetchUserPosts() {
                     const id = doc.id;
                     return { id, ...data }
                 })
-                dispatch({ type: USER_POSTS_STATE_CHANGE, posts })
+                dispatch({ type: USER_POSTS_STATE_CHANGE, posts });
 
-            })
-    })
-}
+            });
+    });
+};
 
-export function fetchUserFollowing() {
-    return ((dispatch) => {
+export const fetchUserFollowing = () => {
+    return (dispatch => {
         firebase.firestore()
             .collection("following")
             .doc(firebase.auth().currentUser.uid)
@@ -60,11 +60,11 @@ export function fetchUserFollowing() {
                 for (let i = 0; i < following.length; i++) {
                     dispatch(fetchUsersData(following[i], true));
                 }
-            })
-    })
-}
+            });
+    });
+};
 
-export function fetchUsersData(uid, getPosts) {
+export const fetchUsersData = (uid, getPosts) => {
     return ((dispatch, getState) => {
         const found = getState().usersState.users.some(el => el.uid === uid);
 
@@ -86,12 +86,12 @@ export function fetchUsersData(uid, getPosts) {
                 })
             if (getPosts) {
                 dispatch(fetchUsersFollowingPosts(uid));
-            }
-        }
-    })
-}
+            };
+        };
+    });
+};
 
-export function fetchUsersFollowingPosts(uid) {
+export const fetchUsersFollowingPosts = (uid) => {
     return ((dispatch, getState) => {
         firebase.firestore()
             .collection("posts")
@@ -114,6 +114,6 @@ export function fetchUsersFollowingPosts(uid) {
                 console.log(posts)
                 dispatch({ type: USERS_POSTS_STATE_CHANGE, posts, uid })
                 console.log(getState())
-            })
-    })
-}
+            });
+    });
+};

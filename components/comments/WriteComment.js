@@ -1,7 +1,36 @@
-import { View, TextInput, Text, Image, StyleSheet, Dimensions } from 'react-native'
+import React, { useState, useEffect } from 'react';
+import { View, Image, StyleSheet, Dimensions } from 'react-native';
+import { TextInput } from 'react-native-paper';
+import firebase from 'firebase';
+require('firebase/firestore');
 
-const WriteComment = ({ avatar }) => {
+const WriteComment = ({ avatar, uid, postId, rerender, tagText }) => {
     const windowWidth = Dimensions.get('window').width;
+    const [text, setText] = useState('');
+
+    useEffect(() => {
+        setText(tagText);
+    }, [tagText]);
+
+    const onCommentSend = () => {
+        if (text) {
+            firebase.firestore()
+                .collection('posts')
+                .doc(uid)
+                .collection('userPosts')
+                .doc(postId)
+                .collection('comments')
+                .add({
+                    creator: firebase.auth().currentUser.uid,
+                    text,
+                    createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
+                })
+                .then(res => {
+                    rerender();
+                    setText('');
+                })
+        };
+    };
 
     return (
         <View style={styles.container}>
@@ -10,15 +39,24 @@ const WriteComment = ({ avatar }) => {
                 source={{ uri: avatar }}
             />
 
-            <View style={styles.containerInput}>
+            <View>
                 <TextInput
-                    style={[styles.textInput, { width: windowWidth - 60 }]}
+                    mode='outlined'
+                    value={text}
+                    placeholder='Nhập bình luận...'
+                    onChangeText={text => setText(text)}
+                    style={{ width: windowWidth - 60 }}
                     multiline={true}
-                    keyboardType='default'
                     autoFocus={true}
+                    autoCorrect={false}
+                    right={
+                        <TextInput.Icon
+                            name="send"
+                            color='#663399'
+                            onPress={onCommentSend}
+                        />
+                    }
                 />
-
-                <Text style={styles.submit}>Đăng</Text>
             </View>
         </View>
     )
@@ -26,22 +64,19 @@ const WriteComment = ({ avatar }) => {
 
 const styles = StyleSheet.create({
     container: {
-        minHeight: 60,
-        justifyContent: 'space-around',
-        alignItems: 'center',
         flexDirection: 'row',
+        alignItems: 'center',
         paddingTop: 10,
+        paddingHorizontal: 10,
         paddingBottom: 10,
         borderTopColor: '#ccc',
         borderTopWidth: 1,
-    },
-    containerInput: {
-        justifyContent: 'center',
     },
     story: {
         width: 30,
         height: 30,
         marginTop: 4,
+        marginRight: 10,
         borderRadius: 50,
     },
     textInput: {

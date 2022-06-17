@@ -2,18 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { View, Image, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { TextInput, Checkbox } from 'react-native-paper';
+import { TextInput, Checkbox, Portal, Modal, Provider, Divider } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import firebase from 'firebase';
-require('firebase/firestore');
+import 'firebase/firestore';
 
 const EditArea = () => {
+    const [visible, setVisible] = React.useState(false);
     const [user, setUser] = useState(null);
     const [man, setMan] = useState(true);
-    const [success, setSuccess] = useState(false);
     const navigation = useNavigation();
+
+    const showModal = () => setVisible(true);
+    const hideModal = () => setVisible(false);
+    const signOut = () => firebase.auth().signOut();
 
     useEffect(() => {
         firebase.firestore()
@@ -27,7 +31,7 @@ const EditArea = () => {
     }, []);
 
 
-    console.log(user)
+    console.log(user);
 
     const EditFormSchema = Yup.object().shape({
         username: Yup.string().required('Tên người dùng là bắt buộc').min(2, 'Tên người dùng phải có ít nhất 2 kí tự'),
@@ -36,7 +40,7 @@ const EditArea = () => {
     });
 
     return (
-        <View style={styles.container}>
+        <Provider style={styles.container}>
             <ScrollView>
                 {user &&
                     <View>
@@ -53,18 +57,25 @@ const EditArea = () => {
                             <View style={{ marginHorizontal: 12, }}>
                                 <Formik
                                     initialValues={{
-                                        username: user?.name ?? 'loading',
-                                        history: user?.history,
-                                        phone: user?.phone
+                                        username: user?.name,
+                                        history: user?.history ?? '',
+                                        phone: user?.phone ?? ''
                                     }}
                                     onSubmit={values => {
+                                        let creatAt = firebase.firestore.Timestamp.fromDate(new Date());
+                                        let uploadTime = firebase.firestore.FieldValue.serverTimestamp();
+
+                                        console.log('creatAt: ', creatAt);
+                                        console.log('uploadTime: ', uploadTime);
+
                                         firebase.firestore().collection("users")
                                             .doc(firebase.auth().currentUser.uid)
                                             .update({
                                                 name: values.username,
                                                 history: values.history,
                                                 phone: values.phone,
-                                                sex: man ? 'man' : 'woman'
+                                                sex: man ? 'man' : 'woman',
+                                                // time: firebase.firestore.Timestamp(new Date())
                                             })
                                             .then(res => Toast.show({
                                                 type: 'success',
@@ -174,13 +185,13 @@ const EditArea = () => {
 
                         <Pressable>
                             <Text
-                                style={{ fontWeight: '700', marginTop: 12, marginLeft: 12, color: 'blue', alignSelf: 'flex-start' }}
+                                style={{ fontWeight: '700', marginLeft: 12, color: 'blue', alignSelf: 'flex-start' }}
                             >Đổi mật khẩu</Text>
                         </Pressable>
 
                         <Pressable
                             style={{ marginBottom: 20 }}
-                            onPress={() => firebase.auth().signOut()}
+                            onPress={showModal}
                         >
                             <Text
                                 style={{ fontWeight: '700', marginTop: 12, marginLeft: 12, color: 'blue', alignSelf: 'flex-start' }}
@@ -188,10 +199,41 @@ const EditArea = () => {
                         </Pressable>
                     </View>
                 }
+
+                <Portal>
+                    <Modal visible={visible} dismissable={false} contentContainerStyle={styles.containerModal}>
+                        <Text
+                            style={{ fontWeight: '700', marginBottom: 20, }}
+                        >
+                            Đăng xuất khỏi tài khoản?</Text>
+
+                        <Divider />
+
+                        <Pressable
+                            style={{ marginBottom: 20, width: 200 }}
+                            onPress={signOut}
+                        >
+                            <Text
+                                style={{ fontWeight: '700', color: 'red', textAlign: 'center' }}
+                            >Đăng xuất</Text>
+                        </Pressable>
+
+                        <Divider />
+
+                        <Pressable
+                            style={{ marginBottom: 20, width: 200 }}
+                            onPress={hideModal}
+                        >
+                            <Text
+                                style={{ fontWeight: '700', textAlign: 'center' }}
+                            >Huỷ</Text>
+                        </Pressable>
+                    </Modal>
+                </Portal>
             </ScrollView>
 
             <Toast />
-        </View>
+        </Provider>
     )
 };
 
@@ -199,9 +241,20 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    containerModal: {
+        height: 150,
+        width: 250,
+        paddingTop: 20,
+        borderRadius: 8,
+        alignSelf: 'center',
+        justifyContent: 'space-around',
+        backgroundColor: '#ffffff',
+        alignItems: 'center'
+    },
     body: {
         paddingTop: 12,
         paddingBottom: 12,
+        marginBottom: 12,
         marginTop: 12,
         borderTopWidth: 1,
         borderBottomWidth: 1,

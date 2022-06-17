@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, ScrollView, Dimensions, Pressable } from
 import { useNavigation } from '@react-navigation/native';
 import IonicIcon from 'react-native-vector-icons/Ionicons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import firebase from 'firebase';
 
 const PostHeader = ({ post }) => {
     const navigation = useNavigation();
@@ -86,22 +87,60 @@ const PostImage = ({ post }) => {
             </View>
         </View>
     )
-}
+};
 
-const PostFooter = ({ post }) => {
-    const [liked, setLiked] = useState(false);
-    const [save, setSave] = useState(false);
+const PostFooter = ({ post, currentId }) => {
+    const [listLiked, setListLiked] = useState([]);
+    const [reset, setReset] = useState(false);
     const navigation = useNavigation();
+
+    useEffect(() => {
+        const unsubscribe = async () => firebase.firestore()
+            .collection('posts')
+            .doc(post?.user?.uid)
+            .collection('userPosts')
+            .doc(post?.id)
+            .collection('likes')
+              .get()
+            .then(snapshot =>
+                setListLiked(snapshot.docs.map(doc => doc.id))
+            );
+        
+        unsubscribe();
+    }, [reset]);
+
+    const toggleLike = id => {
+        listLiked.indexOf(id) !== -1 ?
+            firebase.firestore()
+                .collection('posts')
+                .doc(post?.user?.uid)
+                .collection('userPosts')
+                .doc(post?.id)
+                .collection('likes')
+                .doc(id)
+                .delete()
+                .then(res => setReset(!reset))
+            :
+            firebase.firestore()
+                .collection('posts')
+                .doc(post?.user?.uid)
+                .collection('userPosts')
+                .doc(post?.id)
+                .collection('likes')
+                .doc(id)
+                .set({})
+                .then(res => setReset(!reset));
+    };
 
     return (
         <View style={{ marginHorizontal: 15, marginTop: 10 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
                 <View style={styles.leftFooterIconsContainer}>
                     <IonicIcon
-                        name={liked ? 'heart' : 'heart-outline'}
+                        name={listLiked.indexOf(currentId) !== -1 ? 'heart' : 'heart-outline'}
                         size={25}
-                        color={liked ? 'red' : '#000'}
-                        onPress={() => setLiked(!liked)}
+                        color={listLiked.indexOf(currentId) !== -1 ? 'red' : '#000'}
+                        onPress={() => toggleLike(currentId)}
                     />
                     <IonicIcon
                         name='chatbox-outline'
@@ -121,22 +160,21 @@ const PostFooter = ({ post }) => {
                         color='#000'
                     />
                 </View>
-
-                <View>
-                    <IonicIcon
-                        name={save ? 'bookmark' : 'bookmark-outline'}
-                        size={25}
-                        color='#000'
-                        onPress={() => setSave(!save)}
-                    />
-                </View>
             </View>
 
-            <View style={{ marginTop: 4 }}>
+            <Pressable
+                style={{ marginTop: 4 }}
+                onPress={() =>
+                    navigation.navigate('ListLiked',
+                        { 
+                            likes: listLiked,
+                        }
+                    )} 
+            >
                 <Text style={{ fontWeight: '600' }}>
-                    55 lượt thích
+                    {listLiked.length} lượt thích
                 </Text>
-            </View>
+            </Pressable>
 
             <View style={{ marginTop: 5 }}>
                 <Text>
@@ -155,28 +193,12 @@ const PostFooter = ({ post }) => {
                 >
                     Xem tất cả bình luận
                 </Text>
-
-                {/* {post.comments.length > 1 && (
-                    <Text
-                        style={{ color: 'gray' }}
-                        onPress={() => navigation.push('Comments')}
-                    >
-                        {`Xem tất cả ${post.comments.length} bình luận`}
-                    </Text>
-                )} */}
-
-                {/* {post.comments.length > 1 &&
-                    <Text>
-                        <Text style={{ fontWeight: '700', marginLeft: 5 }}>{post.comments[post.comments.length - 1].name} </Text>
-                        {post.comments[post.comments.length - 1].comment}
-                    </Text>
-                } */}
             </View>
         </View>
     )
-}
+};
 
-const Post = forwardRef(({ post }, ref) => {
+const Post = forwardRef(({ post, currentId }, ref) => {
     const [height, setHeight] = useState(0);
 
     // console.log(height);
@@ -193,10 +215,10 @@ const Post = forwardRef(({ post }, ref) => {
             <View style={styles.divider}></View>
             <PostHeader post={post} />
             <PostImage post={post} />
-            <PostFooter post={post} />
+            <PostFooter post={post} currentId={currentId} />
         </View>
     )
-})
+});
 
 const styles = StyleSheet.create({
     divider: {
@@ -238,6 +260,6 @@ const styles = StyleSheet.create({
         transform: [{ rotate: '320deg' }],
         marginTop: -3,
     }
-})
+});
 
-export default Post
+export default Post;

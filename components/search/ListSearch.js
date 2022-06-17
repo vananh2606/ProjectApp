@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Pressable, Image, Text, StyleSheet, FlatList } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
 
 import firebase from 'firebase';
 require('firebase/firestore');
@@ -69,21 +68,16 @@ const ListSearch = ({ currentId, following }) => {
                     </Pressable>
                 </View>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center', width: 138, justifyContent: 'space-between' }}>
+                <View style={{ alignItems: 'center', width: 138, justifyContent: 'flex-end' }}>
                     <Pressable
                         style={styles.button}
                         onPress={() => toggleFollow(item?.id)}
                     >
                         <Text style={styles.buttonText}>{following.indexOf(item?.id) !== -1 ? 'Đang theo dõi' : 'Theo dõi'}</Text>
                     </Pressable>
-                    <EntypoIcon
-                        name='dots-three-horizontal'
-                        size={20}
-                        color='#000'
-                    />
                 </View>
             </View>
-        )
+        );
     };
 
     return (
@@ -145,13 +139,10 @@ const ListSearch = ({ currentId, following }) => {
                         showsVerticalScrollIndicator={false}
                     />
                 )}
-
             </View>
         </View>
-
-
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     containerIcons: {
@@ -198,6 +189,6 @@ const styles = StyleSheet.create({
     inputSearch: {
         height: 42,
     }
-})
+});
 
 export default ListSearch;

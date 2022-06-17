@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, FlatList } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import { connect } from 'react-redux';
+import firebase from 'firebase';
 
 import Header from "../components/header/Header";
 import Post from '../components/feed/Post';
 
-function Feed(props) {
+const Feed = (props) => {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
@@ -24,11 +24,11 @@ function Feed(props) {
 
             setPosts(posts);
         }
-    }, [props.userFollowingLoaded])
+    }, [props.userFollowingLoaded]);
 
     const renderItem = ({ item }) => {
-        return <Post post={item} />
-    }
+        return <Post post={item} currentId={firebase.auth()?.currentUser?.uid} following={props.following} />
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -41,11 +41,8 @@ function Feed(props) {
                 showsVerticalScrollIndicator={false}
             />
         </SafeAreaView>
-
-
-
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -54,7 +51,7 @@ const styles = StyleSheet.create({
     }
 });
 
-const mapStateToProps = (store) => ({
+const mapStateToProps = store => ({
     currentUser: store.userState.currentUser,
     following: store.userState.following,
     users: store.usersState.users,

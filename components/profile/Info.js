@@ -56,11 +56,11 @@ const Info = ({ user, checkFollowing, postsQuantity }) => {
                 <View style={styles.avatarContainer}>
                     <View>
                         <Image style={styles.avatar} source={{ uri: "http://placeimg.com/640/480/food" }} />
-                        <Pressable style={styles.addStory}>
+                        {/* <Pressable style={styles.addStory}>
                             <Text style={{ color: '#fff', fontSize: 20, marginTop: -4 }}>+</Text>
-                        </Pressable>
+                        </Pressable> */}
                     </View>
-                    <Text style={{ fontWeight: '700' }}>{user?.name}</Text>
+                    <Text style={{ fontWeight: '700', marginBottom: 8 }}>{user?.name}</Text>
                 </View>
 
                 <View style={{ width: 250, flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, }}>
@@ -79,14 +79,30 @@ const Info = ({ user, checkFollowing, postsQuantity }) => {
                 </View>
             </View>
 
+            {user?.history &&
+                <View style={{ marginBottom: 8 }}>
+                    <Text>{user?.history}</Text>
+                </View>
+            }
+
             {route.params?.uid !== firebase.auth().currentUser.uid ? (
-                <Pressable
-                    style={styles.button}
-                    backgroundColor='#663399'
-                    onPress={() => following ? onUnfollow() : onFollow()}
-                >
-                    <Text style={[styles.buttonText, { color: '#ffffff' }]}>{following ? 'Đang theo dõi' : 'Theo dõi'}</Text>
-                </Pressable>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 8 }}>
+                    <Pressable
+                        style={[styles.button, { width: 180 }]}
+                        backgroundColor='#663399'
+                        onPress={() => following ? onUnfollow() : onFollow()}
+                    >
+                        <Text style={[styles.buttonText, { color: '#ffffff' }]}>{following ? 'Đang theo dõi' : 'Theo dõi'}</Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={[styles.button, { width: 180, marginBottom: 8 }]}
+                    // onPress={() => navigation.navigate('EditProfile')}
+                    >
+                        <Text style={[styles.buttonText, { color: '#000000', }]}>Nhắn tin</Text>
+                    </Pressable>
+                </View>
+
             ) : (
                 <Pressable
                     style={styles.button}
@@ -111,7 +127,6 @@ const styles = StyleSheet.create({
     },
     avatarContainer: {
         width: 90,
-        height: 100,
         justifyContent: 'space-between',
         alignItems: 'center',
     },
@@ -119,6 +134,7 @@ const styles = StyleSheet.create({
         width: 90,
         height: 90,
         borderRadius: 50,
+        marginBottom: 4
     },
     addStory: {
         width: 20,
@@ -134,7 +150,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     button: {
-        marginTop: 20,
         alignItems: 'center',
         justifyContent: 'center',
         height: 30,
