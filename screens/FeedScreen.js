@@ -27,9 +27,9 @@ const Feed = (props) => {
     }, [props.userFollowingLoaded]);
 
     const renderItem = ({ item }) => {
-        return <Post post={item} currentId={firebase.auth()?.currentUser?.uid} following={props.following} />
+        return <Post post={item} currentId={firebase.auth()?.currentUser?.uid} />
     };
-
+console.log('posts: ', posts)
     return (
         <SafeAreaView style={styles.container}>
             <Header />

@@ -29,6 +29,19 @@ const WriteComment = ({ avatar, uid, postId, rerender, tagText }) => {
                     rerender();
                     setText('');
                 })
+            if (uid !== firebase.auth().currentUser.uid) {
+                firebase.firestore()
+                    .collection("users")
+                    .doc(uid)
+                    .collection('notifications')
+                    .add({
+                        creator: firebase.auth().currentUser.uid,
+                        type: 'comment',
+                        checked: false,
+                        postId: post?.id,
+                        createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
+                    });
+            };
         };
     };
 

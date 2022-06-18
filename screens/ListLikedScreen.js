@@ -27,22 +27,33 @@ const ListLikedScreen = props => {
     }, [reset]);
 
     const toggleFollow = (id) => {
-        following.indexOf(id) !== -1 ?
+        if (props?.following.indexOf(id) !== -1) {
             firebase.firestore()
                 .collection("following")
-                .doc(currentId)
+                .doc(firebase.auth().currentUser.uid)
                 .collection("userFollowing")
                 .doc(id)
                 .delete()
                 .then(res => setReset(!reset))
-                :
+            firebase.firestore()
+                .collection("users")
+                .doc(item?.id)
+                .collection('notifications')
+                .add({
+                    creator: firebase.auth().currentUser.uid,
+                    type: 'follow',
+                    checked: false,
+                    createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
+                });
+        } else {
             firebase.firestore()
                 .collection("following")
-                .doc(currentId)
+                .doc(firebase.auth().currentUser.uid)
                 .collection("userFollowing")
                 .doc(id)
                 .set({})
                 .then(res => setReset(!reset));
+        };
     };
 
     const renderItem = ({ item }) => {

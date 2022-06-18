@@ -39,6 +39,16 @@ const Info = ({ user, checkFollowing, postsQuantity }) => {
             .collection("userFollowing")
             .doc(route.params?.uid)
             .set({});
+        firebase.firestore()
+            .collection("users")
+            .doc(route.params?.uid)
+            .collection('notifications')
+            .add({
+                creator: firebase.auth().currentUser.uid,
+                type: 'follow',
+                checked: false,
+                createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
+            });
     };
 
     const onUnfollow = () => {

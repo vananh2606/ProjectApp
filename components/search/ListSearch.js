@@ -33,7 +33,7 @@ const ListSearch = ({ currentId, following }) => {
     }, [search, reset]);
 
     const toggleFollow = (id) => {
-        following.indexOf(id) !== -1 ?
+        if (following.indexOf(id) !== -1) {
             firebase.firestore()
                 .collection("following")
                 .doc(currentId)
@@ -41,7 +41,17 @@ const ListSearch = ({ currentId, following }) => {
                 .doc(id)
                 .delete()
                 .then(res => setReset(!reset))
-                :
+            firebase.firestore()
+                .collection("users")
+                .doc(item?.id)
+                .collection('notifications')
+                .add({
+                    creator: firebase.auth().currentUser.uid,
+                    type: 'follow',
+                    checked: false,
+                    createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
+                });
+        } else {
             firebase.firestore()
                 .collection("following")
                 .doc(currentId)
@@ -49,6 +59,7 @@ const ListSearch = ({ currentId, following }) => {
                 .doc(id)
                 .set({})
                 .then(res => setReset(!reset));
+        };
     };
 
     const renderItem = ({ item }) => {

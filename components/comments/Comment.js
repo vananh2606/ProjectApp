@@ -7,7 +7,6 @@ import { vi } from 'date-fns/locale';
 import firebase from 'firebase';
 
 const Comment = ({ comment, reply, onSetTagText, postId, ownId }) => {
-    const [liked, setLiked] = useState(false);
     const [listLiked, setListLiked] = useState([]);
     const [reset, setReset] = useState(false);
     const windowWidth = Dimensions.get('window').width;
@@ -98,8 +97,7 @@ const Comment = ({ comment, reply, onSetTagText, postId, ownId }) => {
                             onPress={() => {
                                 if (comment?.user?.uid !== firebase.auth().currentUser.uid) navigation.navigate('OtherProfile', { uid: comment?.user?.uid })
                             }}
-                        >{reply ? comment?.user?.name : comment?.ownName} </Text>
-
+                        >{comment?.user?.name} </Text>
                         {comment?.text}
                     </Text>
 
@@ -127,10 +125,10 @@ const Comment = ({ comment, reply, onSetTagText, postId, ownId }) => {
 
                 {reply &&
                     <IonicIcon
-                        name={listLiked.indexOf(firebase.auth()?.currentUser?.uid) !== -1 ? 'heart' : 'heart-outline'}
+                        name={listLiked.indexOf(firebase.auth().currentUser.uid) !== -1 ? 'heart' : 'heart-outline'}
                         size={15}
-                        color={listLiked.indexOf(firebase.auth()?.currentUser?.uid) !== -1 ? 'red' : '#000'}
-                        onPress={() => toggleLike(firebase.auth()?.currentUser?.uid)}
+                        color={listLiked.indexOf(firebase.auth().currentUser.uid) !== -1 ? 'red' : '#000'}
+                        onPress={() => toggleLike(firebase.auth().currentUser.uid)}
                     />
                 }
             </View>

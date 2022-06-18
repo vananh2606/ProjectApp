@@ -1,149 +1,90 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Pressable, Image, Text, StyleSheet, Dimensions } from 'react-native';
-import { TextInput } from 'react-native-paper';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
+import { useNavigation } from '@react-navigation/native';
+import { formatRelative, formatDistance } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import firebase from 'firebase';
 
-const ListNotifi = () => {
+const ListNotifi = ({ notifi }) => {
     const windowWidth = Dimensions.get('window').width;
+    const navigation = useNavigation();
+
+    const formatDate = seconds => {
+        let formattedDate = '';
+        let now = new Date();
+        let createAt = new Date(seconds * 1000);
+
+        if (seconds) {
+            if (now - createAt < 259200000) {
+                formattedDate = formatDistance(createAt, now, { addSuffix: true, locale: vi });
+            } else {
+                formattedDate = formatRelative(createAt, now, { locale: vi });
+            };
+        };
+        formattedDate = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+        return formattedDate;
+    };
+
+    const checkNotifi = () => {
+        firebase.firestore()
+            .collection("users")
+            .doc(uid)
+            .collection('notifications')
+            .doc(notifi?.id)
+            .update({
+                checked: true
+            });
+    };
 
     return (
-        <View style={{ marginHorizontal: 12, }}>
+        <View style={{ paddingHorizontal: 12, backgroundColor: `${notifi?.check ? '#ffffff' : '#cccccc'}` }}>
             <View>
-                <Text style={{ fontWeight: '700', marginBottom: 12, }}>Hôm nay</Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, }}>
-                    <Pressable>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <View>
                         <Image
                             style={styles.avatar}
                             source={{ uri: "http://placeimg.com/640/480/food" }}
                         />
-                    </Pressable>
+                    </View>
 
-                    <Pressable>
-                        <Text style={{ width: windowWidth - 68 }}>
-                            <Text style={{ fontWeight: '700', marginLeft: 5 }}>Văn Anh </Text>
-                            đã yêu thích bài viết của bạn
-                        </Text>
+                    {notifi?.type === 'follow' &&
+                        <Pressable onPress={() => {
+                            navigation.navigate('OtherProfile', { uid: notifi?.uid });
+                            checkNotifi();
+                        }}>
+                            <Text style={{ width: windowWidth - 68 }}>
+                                <Text style={{ fontWeight: '700', marginLeft: 5 }}>{notifi?.user?.name} </Text>
+                                đã theo dõi bạn
+                            </Text>
 
-                        <View style={styles.containerFooter}>
-                            <Text style={styles.textFooter}>10 phút trước</Text>
+                            <View style={styles.containerFooter}>
+                                <Text style={styles.textFooter}>{formatDate(notifi?.createAt)}</Text>
+                            </View>
+                        </Pressable>
+                    }
 
-                        </View>
-                    </Pressable>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, }}>
-                    <Pressable>
-                        <Image
-                            style={styles.avatar}
-                            source={{ uri: "http://placeimg.com/640/480/food" }}
-                        />
-                    </Pressable>
+                    {(notifi?.type === 'like' || notifi?.type === 'comment') &&
+                        <Pressable onPress={() => {
+                            navigation.navigate('Post', { uid: notifi?.postId });
+                            checkNotifi();
+                        }}>
+                            <Text style={{ width: windowWidth - 68 }}>
+                                <Text style={{ fontWeight: '700', marginLeft: 5 }}>{notifi?.user?.name} </Text>
+                                {notifi?.type === 'like' ? 'đã thích bài viết của bạn' :
+                                    notifi?.type === 'comment' ? 'đã bình luận bài viết của bạn' : ''
+                                }
+                            </Text>
 
-                    <Pressable>
-                        <Text style={{ width: windowWidth - 68 }}>
-                            <Text style={{ fontWeight: '700', marginLeft: 5 }}>Văn Anh </Text>
-                            đã yêu thích bài viết của bạn
-                        </Text>
-
-                        <View style={styles.containerFooter}>
-                            <Text style={styles.textFooter}>10 phút trước</Text>
-
-                        </View>
-                    </Pressable>
-                </View>
-            </View>
-
-            <View>
-                <Text style={{ fontWeight: '700', marginBottom: 12, }}>Tuần này</Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, }}>
-                    <Pressable>
-                        <Image
-                            style={styles.avatar}
-                            source={{ uri: "http://placeimg.com/640/480/food" }}
-                        />
-                    </Pressable>
-
-                    <Pressable>
-                        <Text style={{ width: windowWidth - 68 }}>
-                            <Text style={{ fontWeight: '700', marginLeft: 5 }}>Văn Anh </Text>
-                            đã yêu thích bài viết của bạn
-                        </Text>
-
-                        <View style={styles.containerFooter}>
-                            <Text style={styles.textFooter}>10 phút trước</Text>
-
-                        </View>
-                    </Pressable>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, }}>
-                    <Pressable>
-                        <Image
-                            style={styles.avatar}
-                            source={{ uri: "http://placeimg.com/640/480/food" }}
-                        />
-                    </Pressable>
-
-                    <Pressable>
-                        <Text style={{ width: windowWidth - 68 }}>
-                            <Text style={{ fontWeight: '700', marginLeft: 5 }}>Văn Anh </Text>
-                            đã yêu thích bài viết của bạn
-                        </Text>
-
-                        <View style={styles.containerFooter}>
-                            <Text style={styles.textFooter}>10 phút trước</Text>
-
-                        </View>
-                    </Pressable>
-                </View>
-            </View>
-
-            <View>
-                <Text style={{ fontWeight: '700', marginBottom: 12, }}>Tháng này</Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, }}>
-                    <Pressable>
-                        <Image
-                            style={styles.avatar}
-                            source={{ uri: "http://placeimg.com/640/480/food" }}
-                        />
-                    </Pressable>
-
-                    <Pressable>
-                        <Text style={{ width: windowWidth - 68 }}>
-                            <Text style={{ fontWeight: '700', marginLeft: 5 }}>Văn Anh </Text>
-                            đã yêu thích bài viết của bạn
-                        </Text>
-
-                        <View style={styles.containerFooter}>
-                            <Text style={styles.textFooter}>10 phút trước</Text>
-
-                        </View>
-                    </Pressable>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, }}>
-                    <Pressable>
-                        <Image
-                            style={styles.avatar}
-                            source={{ uri: "http://placeimg.com/640/480/food" }}
-                        />
-                    </Pressable>
-
-                    <Pressable>
-                        <Text style={{ width: windowWidth - 68 }}>
-                            <Text style={{ fontWeight: '700', marginLeft: 5 }}>Văn Anh </Text>
-                            đã yêu thích bài viết của bạn
-                        </Text>
-
-                        <View style={styles.containerFooter}>
-                            <Text style={styles.textFooter}>10 phút trước</Text>
-
-                        </View>
-                    </Pressable>
+                            <View style={styles.containerFooter}>
+                                <Text style={styles.textFooter}>{formatDate(notifi?.createAt)}</Text>
+                            </View>
+                        </Pressable>
+                    }
                 </View>
             </View>
         </View>
-
-
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     avatar: {
@@ -151,7 +92,7 @@ const styles = StyleSheet.create({
         height: 30,
         marginTop: 4,
         borderRadius: 50,
-    },
-})
+    }
+});
 
 export default ListNotifi;

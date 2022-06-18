@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, Dimensions, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import IonicIcon from 'react-native-vector-icons/Ionicons';
@@ -7,7 +7,7 @@ import firebase from 'firebase';
 
 const PostHeader = ({ post }) => {
     const navigation = useNavigation();
-
+    console.log('post: ', post)
     return (
         <View style={{
             flexDirection: 'row',
@@ -95,22 +95,23 @@ const PostFooter = ({ post, currentId }) => {
     const navigation = useNavigation();
 
     useEffect(() => {
-        const unsubscribe = async () => firebase.firestore()
-            .collection('posts')
-            .doc(post?.user?.uid)
-            .collection('userPosts')
-            .doc(post?.id)
-            .collection('likes')
-              .get()
-            .then(snapshot =>
-                setListLiked(snapshot.docs.map(doc => doc.id))
-            );
-        
+        const unsubscribe = async () =>
+            firebase.firestore()
+                .collection('posts')
+                .doc(post?.user?.uid)
+                .collection('userPosts')
+                .doc(post?.id)
+                .collection('likes')
+                .get()
+                .then(snapshot =>
+                    setListLiked(snapshot.docs.map(doc => doc.id))
+                );
+
         unsubscribe();
     }, [reset]);
 
     const toggleLike = id => {
-        listLiked.indexOf(id) !== -1 ?
+        if (listLiked.indexOf(id) !== -1) {
             firebase.firestore()
                 .collection('posts')
                 .doc(post?.user?.uid)
@@ -120,7 +121,20 @@ const PostFooter = ({ post, currentId }) => {
                 .doc(id)
                 .delete()
                 .then(res => setReset(!reset))
-            :
+            if (uid !== firebase.auth().currentUser.uid) {
+                firebase.firestore()
+                .collection("users")
+                .doc(route.params?.uid)
+                .collection('notifications')
+                .add({
+                    creator: firebase.auth().currentUser.uid,
+                    type: 'like',
+                    checked: false,
+                    postId: post?.id,
+                    createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
+                });
+            };
+        } else {
             firebase.firestore()
                 .collection('posts')
                 .doc(post?.user?.uid)
@@ -130,6 +144,8 @@ const PostFooter = ({ post, currentId }) => {
                 .doc(id)
                 .set({})
                 .then(res => setReset(!reset));
+        };
+
     };
 
     return (
@@ -150,6 +166,7 @@ const PostFooter = ({ post, currentId }) => {
                             navigation.navigate('Comments',
                                 {
                                     postId: post.id,
+                                    ownName: post?.user?.name,
                                     uid: post.user.uid
                                 }
                             )}
@@ -166,10 +183,10 @@ const PostFooter = ({ post, currentId }) => {
                 style={{ marginTop: 4 }}
                 onPress={() =>
                     navigation.navigate('ListLiked',
-                        { 
+                        {
                             likes: listLiked,
                         }
-                    )} 
+                    )}
             >
                 <Text style={{ fontWeight: '600' }}>
                     {listLiked.length} lượt thích
@@ -178,7 +195,7 @@ const PostFooter = ({ post, currentId }) => {
 
             <View style={{ marginTop: 5 }}>
                 <Text>
-                    <Text style={{ fontWeight: '700', marginLeft: 5 }}>{`${post.user.name} `}</Text>
+                    <Text style={{ fontWeight: '700', marginLeft: 5 }}>{`${post?.user?.name} `}</Text>
                     {post.caption}
                 </Text>
 
@@ -187,6 +204,7 @@ const PostFooter = ({ post, currentId }) => {
                         navigation.navigate('Comments',
                             {
                                 postId: post.id,
+                                ownName: post?.user?.name,
                                 uid: post.user.uid
                             }
                         )}
@@ -198,19 +216,10 @@ const PostFooter = ({ post, currentId }) => {
     )
 };
 
-const Post = forwardRef(({ post, currentId }, ref) => {
-    const [height, setHeight] = useState(0);
-
-    // console.log(height);
-
-    useImperativeHandle(ref, () => ({
-        returnHeight: () => height
-    }));
-
+const Post = ({ post, currentId }) => {
     return (
         <View
             style={{ marginBottom: 20 }}
-            onLayout={object => setHeight(object.nativeEvent.layout.height)}
         >
             <View style={styles.divider}></View>
             <PostHeader post={post} />
@@ -218,7 +227,7 @@ const Post = forwardRef(({ post, currentId }, ref) => {
             <PostFooter post={post} currentId={currentId} />
         </View>
     )
-});
+};
 
 const styles = StyleSheet.create({
     divider: {

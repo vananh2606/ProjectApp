@@ -13,6 +13,7 @@ import FeedScreen from './screens/FeedScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import SearchScreen from './screens/SearchScreen';
 import OtherProfileScreen from './screens/OtherProfileScreen';
+import NotifiScreen from './screens/NotifiScreen';
 
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -60,11 +61,14 @@ const SearchStack = (props) => (
 
 class Main extends Component {
     componentDidMount() {
-        this.props.clearData();
         this.props.fetchUser();
         this.props.fetchUserPosts();
         this.props.fetchUserFollowing();
-    }
+    };
+
+    componentWillUnmount() {
+        this.props.clearData();
+    };
 
     render() {
         return (
@@ -98,6 +102,12 @@ class Main extends Component {
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommuntiyIcons name="plus-box" color={color} size={26} />
+                        ),
+                    }} />
+                <Tab.Screen name="Notifi" component={NotifiScreen}
+                    options={{
+                        tabBarIcon: ({ color, size }) => (
+                            <MaterialCommuntiyIcons name="heart-outline" color={color} size={26} />
                         ),
                     }} />
                 <Tab.Screen name="Profile" component={ProfileScreen}

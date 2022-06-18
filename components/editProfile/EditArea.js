@@ -62,12 +62,6 @@ const EditArea = () => {
                                         phone: user?.phone ?? ''
                                     }}
                                     onSubmit={values => {
-                                        let creatAt = firebase.firestore.Timestamp.fromDate(new Date());
-                                        let uploadTime = firebase.firestore.FieldValue.serverTimestamp();
-
-                                        console.log('creatAt: ', creatAt);
-                                        console.log('uploadTime: ', uploadTime);
-
                                         firebase.firestore().collection("users")
                                             .doc(firebase.auth().currentUser.uid)
                                             .update({
@@ -75,7 +69,6 @@ const EditArea = () => {
                                                 history: values.history,
                                                 phone: values.phone,
                                                 sex: man ? 'man' : 'woman',
-                                                // time: firebase.firestore.Timestamp(new Date())
                                             })
                                             .then(res => Toast.show({
                                                 type: 'success',

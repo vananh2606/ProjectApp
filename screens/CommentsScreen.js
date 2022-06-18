@@ -27,9 +27,9 @@ const CommentScreen = (props) => {
         const unsubscribe = async () => {
             firebase.firestore()
                 .collection('posts')
-                .doc(props.route.params.uid)
+                .doc(route.params?.uid)
                 .collection('userPosts')
-                .doc(props.route.params.postId)
+                .doc(route.params?.postId)
                 .collection('comments')
                 .orderBy('createAt')
                 .get()
@@ -50,8 +50,9 @@ const CommentScreen = (props) => {
                 .get()
                 .then(snapshot => {
                     if (snapshot.exists) {
+                        let post = {};
                         setPost({
-                            ownName: snapshot.data()?.name,
+                            user: { name: route.params?.ownName },
                             text: snapshot.data()?.caption,
                             createAt: '100000'
                         });
@@ -61,11 +62,11 @@ const CommentScreen = (props) => {
                     }
                 });
         };
-    
+
         unsubscribe();
     }, [props.route.params.postId, props.users, rerender]);
 
-    const matchUserToComment = (comments) => {
+    const matchUserToComment = comments => {
         for (let i = 0; i < comments.length; i++) {
             if (comments[i].hasOwnProperty('user')) continue;
             const user = props.users.find(x => x.uid === comments[i].creator)
@@ -79,8 +80,8 @@ const CommentScreen = (props) => {
         return <Comment
             comment={item}
             reply={true}
-            postId={route.params?.postId}
             ownId={route.params?.uid}
+            postId={route.params?.postId}
             onSetTagText={value => setTagText(value)}
         />
     }
@@ -89,9 +90,10 @@ const CommentScreen = (props) => {
         return <Comment
             comment={post}
             reply={false}
+            ownId={route.params?.uid}
         />
     }
-
+    console.log(comments)
     return (
         <SafeAreaView style={styles.container}>
             <HeaderCmt />

@@ -36,6 +36,7 @@ import RegisterScreen from './screens/RegisterScreen';
 import AddScreen from './screens/AddScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import ListLikedScreen from './screens/ListLikedScreen';
+import PostScreen from './screens/PostScreen';
 
 const Stack = createStackNavigator();
 
@@ -87,6 +88,9 @@ const App = () => {
                 <Stack.Screen
                   name="ListLiked"
                   component={ListLikedScreen} />
+                <Stack.Screen
+                  name="Post"
+                  component={PostScreen} />
               </Stack.Navigator>
             </NavigationContainer>
           </Provider>
