@@ -29,16 +29,18 @@ if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig)
 }
 
-import { NavigationContainer } from '@react-navigation/native';
+import { getFocusedRouteNameFromRoute, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import LandingScreen from './components/auth/Landing';
 import RegisterScreen from './components/auth/Register';
 import LoginScreen from './components/auth/Login';
 import MainScreen from './components/Main';
-import AddScreen from './components/main/Add';
-import SaveScreen from './components/main/Save';
-import CommentScreen from './components/main/Comment';
+import AddScreen from './components/main/add/Add';
+import SaveScreen from './components/main/add/Save';
+import ChatScreen from './components/main/chat/Chat';
+import ChatListScreen from './components/main/chat/List';
+import CommentScreen from './components/main/post/Comment';
 
 const Stack = createStackNavigator();
 
@@ -93,9 +95,42 @@ export class App extends Component {
       <Provider store={store}>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Main">
-            <Stack.Screen name="Main" component={MainScreen} />
+            <Stack.Screen name="Main" component={MainScreen} navigation={this.props.navigation} options={({ route }) => {
+              const routeName = getFocusedRouteNameFromRoute(route) ?? 'Feed';
+
+              switch (routeName) {
+                case 'Camera': {
+                  return {
+                    headerTitle: 'Camera',
+                  };
+                }
+                case 'chat': {
+                  return {
+                    headerTitle: 'Chat',
+                  };
+                }
+                case 'Profile': {
+                  return {
+                    headerTitle: 'Profile',
+                  };
+                }
+                case 'Search': {
+                  return {
+                    headerTitle: 'Search',
+                  };
+                }
+                case 'Feed':
+                default: {
+                  return {
+                    headerTitle: 'Instagram',
+                  };
+                }
+              }
+            }} />
             <Stack.Screen name="Add" component={AddScreen} navigation={this.props.navigation} />
             <Stack.Screen name="Save" component={SaveScreen} navigation={this.props.navigation} />
+            <Stack.Screen name="Chat" component={ChatScreen} navigation={this.props.navigation} />
+            <Stack.Screen name="ChatList" component={ChatListScreen} navigation={this.props.navigation} />
             <Stack.Screen name="Comment" component={CommentScreen} navigation={this.props.navigation} />
           </Stack.Navigator>
         </NavigationContainer>

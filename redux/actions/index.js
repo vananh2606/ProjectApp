@@ -1,16 +1,114 @@
-import { USER_STATE_CHANGE, USER_POSTS_STATE_CHANGE, USER_FOLLOWING_STATE_CHANGE, USERS_DATA_STATE_CHANGE, USERS_POSTS_STATE_CHANGE, CLEAR_DATA } from "../constants/index";
+import {
+    CLEAR_DATA,
+    USERS_DATA_STATE_CHANGE,
+    USERS_LIKES_STATE_CHANGE,
+    USERS_POSTS_STATE_CHANGE,
+    USER_CHATS_STATE_CHANGE,
+    USER_FOLLOWING_STATE_CHANGE,
+    USER_POSTS_STATE_CHANGE,
+    USER_STATE_CHANGE,
+}
+    from "../constants/index";
 import firebase from "firebase";
 require('firebase/firestore')
+import { Constants } from 'react-native-unimodules';
+import * as Notifications from 'expo-notifications';
+
+let unsubscribe = [];
 
 export function clearData() {
     return ((dispatch) => {
+        for (let i = unsubscribe; i < unsubscribe.length; i++) {
+            unsubscribe[i]();
+        }
         dispatch({ type: CLEAR_DATA })
     })
 }
 
+export function reload() {
+    return ((dispatch) => {
+        dispatch(clearData())
+        dispatch(fetchUser())
+        dispatch(setNotificationService())
+        dispatch(fetchUserPosts())
+        dispatch(fetchUserFollowing())
+        dispatch(fetchUserChats())
+
+    })
+}
+
+export const setNotificationService = () => async dispatch => {
+    let token;
+    if (Constants.isDevice) {
+        const existingStatus = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus.status !== 'granted') {
+            const status = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+
+        if (finalStatus.status !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return;
+        }
+        token = (await Notifications.getExpoPushTokenAsync());
+    } else {
+        alert('Must use physical device for Push Notifications');
+    }
+
+    if (Platform.OS === 'android') {
+        Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+        });
+    }
+
+    Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+            shouldShowAlert: true,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+        }),
+    });
+
+    if (token != undefined) {
+        firebase.firestore()
+            .collection("users")
+            .doc(firebase.auth().currentUser.uid)
+            .update({
+                notificationToken: token.data,
+            })
+    }
+
+}
+
+export const sendNotification = (to, title, body, data) => dispatch => {
+    if (to == null) {
+        return;
+    }
+
+    let response = fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            to,
+            sound: 'default',
+            title,
+            body,
+            data
+        })
+    })
+
+}
+
 export function fetchUser() {
     return ((dispatch) => {
-        firebase.firestore()
+        let listener = firebase.firestore()
             .collection("users")
             .doc(firebase.auth().currentUser.uid)
             .get()
@@ -22,6 +120,36 @@ export function fetchUser() {
                     console.log('does not exits')
                 }
             })
+        unsubscribe.push(listener)
+    })
+}
+
+export function fetchUserChats() {
+    return ((dispatch) => {
+        let listener = firebase.firestore()
+            .collection("chats")
+            .where("users", "array-contains", firebase.auth().currentUser.uid)
+            .orderBy("lastMessageTimestamp", "desc")
+            .onSnapshot((snapshot) => {
+                let chats = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    return { id, ...data }
+                })
+
+                for (let i = 0; i < chats.length; i++) {
+                    let otherUserId;
+                    if (chats[i].users[0] == firebase.auth().currentUser.uid) {
+                        otherUserId = chats[i].users[1];
+                    } else {
+                        otherUserId = chats[i].users[0];
+                    }
+                    dispatch(fetchUsersData(otherUserId, false))
+                }
+
+                dispatch({ type: USER_CHATS_STATE_CHANGE, chats })
+            })
+        unsubscribe.push(listener)
     })
 }
 
@@ -47,7 +175,7 @@ export function fetchUserPosts() {
 
 export function fetchUserFollowing() {
     return ((dispatch) => {
-        firebase.firestore()
+        let listener = firebase.firestore()
             .collection("following")
             .doc(firebase.auth().currentUser.uid)
             .collection("userFollowing")
@@ -61,6 +189,7 @@ export function fetchUserFollowing() {
                     dispatch(fetchUsersData(following[i], true));
                 }
             })
+        unsubscribe.push(listener)
     })
 }
 
@@ -115,5 +244,28 @@ export function fetchUsersFollowingPosts(uid) {
                 dispatch({ type: USERS_POSTS_STATE_CHANGE, posts, uid })
                 console.log(getState())
             })
+    })
+}
+
+export function queryUsersByUsername(username) {
+    return ((dispatch, getState) => {
+        return new Promise((resolve, reject) => {
+            if (username.length == 0) {
+                resolve([])
+            }
+            firebase.firestore()
+                .collection('users')
+                .where('name', '>=', username)
+                .limit(10)
+                .get()
+                .then((snapshot) => {
+                    let users = snapshot.docs.map(doc => {
+                        const data = doc.data();
+                        const id = doc.id;
+                        return { id, ...data }
+                    });
+                    resolve(users);
+                })
+        })
     })
 }
