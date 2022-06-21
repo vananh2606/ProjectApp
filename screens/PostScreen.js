@@ -37,7 +37,7 @@ const PostScreen = () => {
         };
         unsubscribe();
     }, []);
-    // console.log('post: ', post)
+
     return (
         <SafeAreaView style={styles.container}>
             <HeaderSearch
@@ -49,7 +49,6 @@ const PostScreen = () => {
         </SafeAreaView>
     )
 };
-
 
 const styles = StyleSheet.create({
     container: {

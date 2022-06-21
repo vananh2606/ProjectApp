@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
-import { TextInput, View, Button, Image } from 'react-native';
+import React, { useState } from 'react';
+import { TextInput, StyleSheet, Button, Image } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from '@react-navigation/native';
 
+import Header from '../components/newPost/Header';
 import firebase from 'firebase';
 require("firebase/firestore")
 require("firebase/firebase-storage")
 
-export default function Save(props) {
+const Save = (props) => {
     // console.log(props.route.params.image);
     const [caption, setCaption] = useState("");
     const navigation = useNavigation();
@@ -57,14 +59,24 @@ export default function Save(props) {
     }
 
     return (
-        <View style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1 }}>
             <Image source={{ uri: props.route.params.image }} />
             <TextInput
                 placeholder='Write a Caption ...'
                 onChangeText={(caption) => setCaption(caption)}
+                multiline={true}
             />
 
             <Button title='Save' onPress={() => uploadImage()} />
-        </View>
+        </SafeAreaView>
     )
-}
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#ffffff',
+    },
+});
+
+export default Save;

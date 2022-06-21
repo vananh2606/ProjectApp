@@ -9,25 +9,14 @@ import ListNotifi from '../components/notifi/ListNotifi';
 import firebase from 'firebase';
 
 const NotifiScreen = (props) => {
-    const [users, setUsers] = useState([]);
+    const [reset, setReset] = useState(false);
     const [notifies, setNotifies] = useState([]);
 
     useEffect(() => {
         const unsubscribe = async () => {
-            await firebase.firestore()
+            firebase.firestore()
                 .collection('users')
-                .get()
-                .then(snapshot => {
-                    let users = snapshot.docs.map(doc => {
-                        const data = doc.data();
-                        const id = doc.id;
-                        return { id, ...data }
-                    });
-                    setUsers(users);
-                });
-            await firebase.firestore()
-                .collection('users')
-                .doc(firebase.auth().currentUser.uid)
+                .doc(firebase.auth()?.currentUser?.uid)
                 .collection('notifications')
                 .orderBy('createAt')
                 .get()
@@ -37,29 +26,38 @@ const NotifiScreen = (props) => {
                         const id = doc.id;
                         return { id, ...data }
                     });
-                    matchUserToNotifies(notifies);
+                    matchUserToNotifi(notifies);
                 });
         };
-
         unsubscribe();
-    }, []);
-    console.log('noti:', notifies)
-    const matchUserToNotifies = notifies => {
+    }, [reset]);
+    // console.log('noti:', notifies)
+    // const matchUserToNotifies = notifies => {
+    //     for (let i = 0; i < notifies.length; i++) {
+    //         if (notifies[i].hasOwnProperty('user')) continue;
+    //         const user = users.find(x => x.id === notifies[i].creator)
+    //         if (user === undefined) props.fetchUsersData(notifies[i].creator, false);
+    //         else notifies[i].user = user;
+    //     };
+    //     setNotifies(notifies);
+    // };
+
+    // console.log('props: ', users)
+
+    const matchUserToNotifi = notifies => {
         for (let i = 0; i < notifies.length; i++) {
             if (notifies[i].hasOwnProperty('user')) continue;
-            const user = users.find(x => x.id === notifies[i].creator)
+            const user = props.users.find(x => x.uid === notifies[i].creator)
             if (user === undefined) props.fetchUsersData(notifies[i].creator, false);
             else notifies[i].user = user;
         };
         setNotifies(notifies);
     };
 
-    console.log('props: ', users)
-
     const renderItem = ({ item }) => {
-        return <ListNotifi notifi={item} />
+        return <ListNotifi notifi={item} rerender={() => setReset(!reset)} />
     };
-    // console.log('props: ', notifies)
+    console.log('props: ', notifies)
     return (
         <SafeAreaView style={styles.container}>
             <HeaderNotifi />

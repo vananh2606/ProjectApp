@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Pressable, Image, Text, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { formatRelative, formatDistance } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import firebase from 'firebase';
 
-const ListNotifi = ({ notifi }) => {
+const ListNotifi = ({ notifi, rerender }) => {
+    const [reset, setReset] = useState(false);
     const windowWidth = Dimensions.get('window').width;
     const navigation = useNavigation();
 
@@ -25,19 +26,22 @@ const ListNotifi = ({ notifi }) => {
         return formattedDate;
     };
 
-    const checkNotifi = () => {
+    const checkNotifi = (uid) => {
         firebase.firestore()
             .collection("users")
-            .doc(uid)
+            .doc(firebase.auth().currentUser.uid)
             .collection('notifications')
             .doc(notifi?.id)
             .update({
                 checked: true
-            });
+            })
+            .then(res => rerender());
     };
 
+    console.log(notifi)
+
     return (
-        <View style={{ paddingHorizontal: 12, backgroundColor: `${notifi?.check ? '#ffffff' : '#cccccc'}` }}>
+        <View style={{ paddingTop: 8, paddingHorizontal: 12, backgroundColor: `${notifi?.checked ? '#ffffff' : '#cccccc'}` }}>
             <View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
                     <View>
@@ -49,8 +53,8 @@ const ListNotifi = ({ notifi }) => {
 
                     {notifi?.type === 'follow' &&
                         <Pressable onPress={() => {
-                            navigation.navigate('OtherProfile', { uid: notifi?.uid });
                             checkNotifi();
+                            navigation.navigate('OtherProfile', { uid: notifi?.creator });
                         }}>
                             <Text style={{ width: windowWidth - 68 }}>
                                 <Text style={{ fontWeight: '700', marginLeft: 5 }}>{notifi?.user?.name} </Text>
@@ -65,8 +69,11 @@ const ListNotifi = ({ notifi }) => {
 
                     {(notifi?.type === 'like' || notifi?.type === 'comment') &&
                         <Pressable onPress={() => {
-                            navigation.navigate('Post', { uid: notifi?.postId });
                             checkNotifi();
+                            navigation.navigate('Post', { 
+                                postId: notifi?.postId,
+                                ownId: firebase.auth()?.currentUser?.uid
+                            });
                         }}>
                             <Text style={{ width: windowWidth - 68 }}>
                                 <Text style={{ fontWeight: '700', marginLeft: 5 }}>{notifi?.user?.name} </Text>

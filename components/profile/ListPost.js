@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import { View, Pressable, TouchableOpacity, Image, Text, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import IonicIcon from 'react-native-vector-icons/Ionicons';
-import firebase from 'firebase';
 
-const ListPost = ({ userPosts }) => {
+const ListPost = ({ userPosts, ownId }) => {
     const [selectIcon, setSelectIcon] = useState(true);
     const navigation = useNavigation();
-    console.log('userPosts: ', userPosts)
+
+    console.log('userPosts: ', userPosts);
+
     const renderItem = ({ item }) => {
         return (
             <TouchableOpacity
                 style={styles.item}
                 onPress={() => navigation.navigate('Post', {
-                    ownId: firebase.auth().currentUser.uid,
+                    ownId: ownId,
                     postId: item?.id
                 })}
             >
@@ -21,14 +22,6 @@ const ListPost = ({ userPosts }) => {
                     style={{ height: '100%', resizeMode: 'cover' }}
                     source={{ uri: item.downloadURL }}
                 />
-                {/* {info.posts.length > 1 &&
-                                <IonicIcon
-                                    name='albums'
-                                    size={20}
-                                    color='#fff'
-                                    style={styles.notifiListImg}
-                                />
-                            } */}
             </TouchableOpacity>
         )
     };

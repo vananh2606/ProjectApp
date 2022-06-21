@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { connect } from 'react-redux';
+import firebase from 'firebase';
 
 import Header from "../components/header/Header";
 import Info from '../components/profile/Info';
@@ -22,7 +23,7 @@ const ProfileScreen = (props) => {
         <SafeAreaView style={styles.container}>
             <Header />
             <Info user={user} checkFollowing={props?.following} postsQuantity={userPosts.length} />
-            <ListPost userPosts={userPosts} />
+            <ListPost userPosts={userPosts} ownId={firebase.auth().currentUser.uid} />
         </SafeAreaView>
     )
 };

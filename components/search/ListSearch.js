@@ -43,7 +43,7 @@ const ListSearch = ({ currentId, following }) => {
                 .then(res => setReset(!reset))
             firebase.firestore()
                 .collection("users")
-                .doc(item?.id)
+                .doc(id)
                 .collection('notifications')
                 .add({
                     creator: firebase.auth().currentUser.uid,

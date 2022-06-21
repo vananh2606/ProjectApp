@@ -100,7 +100,7 @@ const Comment = ({ comment, reply, onSetTagText, postId, ownId }) => {
                         >{comment?.user?.name} </Text>
                         {comment?.text}
                     </Text>
-
+                    {console.log(comment)}
                     <View style={styles.containerFooter}>
                         <Text style={styles.textFooter}>{formatDate(comment?.createAt)}</Text>
                         {reply &&

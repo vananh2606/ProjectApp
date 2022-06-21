@@ -5,6 +5,7 @@ import firebase from 'firebase';
 require('firebase/firestore');
 
 const WriteComment = ({ avatar, uid, postId, rerender, tagText }) => {
+    // const [unfocus, setUnfocus] = useState(false);
     const windowWidth = Dimensions.get('window').width;
     const [text, setText] = useState('');
 
@@ -26,8 +27,9 @@ const WriteComment = ({ avatar, uid, postId, rerender, tagText }) => {
                     createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
                 })
                 .then(res => {
-                    rerender();
+                    rerender?.();
                     setText('');
+                    setUnfocus(true);
                 })
             if (uid !== firebase.auth().currentUser.uid) {
                 firebase.firestore()
@@ -38,7 +40,7 @@ const WriteComment = ({ avatar, uid, postId, rerender, tagText }) => {
                         creator: firebase.auth().currentUser.uid,
                         type: 'comment',
                         checked: false,
-                        postId: post?.id,
+                        postId: postId,
                         createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
                     });
             };
@@ -61,6 +63,7 @@ const WriteComment = ({ avatar, uid, postId, rerender, tagText }) => {
                     style={{ width: windowWidth - 60 }}
                     multiline={true}
                     autoFocus={true}
+                    // focusable={unfocus}
                     autoCorrect={false}
                     right={
                         <TextInput.Icon

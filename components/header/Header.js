@@ -12,21 +12,14 @@ const Header = () => {
                 <Text>VAL</Text>
             </TouchableOpacity>
 
-            <View style={{ flexDirection: 'row', width: 60, justifyContent: 'space-between' }}>
-                <TouchableOpacity>
-                    <AntDesign
-                        name='plussquareo'
-                        size={25}
-                        color='#000'
-                        onPress={() => navigation.push('NewPost')}
-                    />
-                </TouchableOpacity>
-                <IonicIcon
-                    name='navigate-outline'
+            <TouchableOpacity style={{ flexDirection: 'row', width: 60, justifyContent: 'flex-end' }}>
+                <AntDesign
+                    name='plussquareo'
                     size={25}
                     color='#000'
+                    onPress={() => navigation.navigate('Add')}
                 />
-            </View>
+            </TouchableOpacity>
         </View>
     )
 };

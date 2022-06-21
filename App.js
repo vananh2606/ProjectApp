@@ -37,6 +37,8 @@ import AddScreen from './screens/AddScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import ListLikedScreen from './screens/ListLikedScreen';
 import PostScreen from './screens/PostScreen';
+import ChatScreen from './screens/ChatScreen';
+import ImgScreen from './screens/ImgScreen';
 
 const Stack = createStackNavigator();
 
@@ -91,6 +93,12 @@ const App = () => {
                 <Stack.Screen
                   name="Post"
                   component={PostScreen} />
+                <Stack.Screen
+                  name="Chat"
+                  component={ChatScreen} />
+                <Stack.Screen
+                  name="Img"
+                  component={ImgScreen} />
               </Stack.Navigator>
             </NavigationContainer>
           </Provider>

@@ -19,7 +19,7 @@ const OtherProfileScreen = (props) => {
     useEffect(() => {
         firebase.firestore()
             .collection("users")
-            .doc(route?.params?.uid)
+            .doc(route.params?.uid)
             .get()
             .then(snapshot => {
                 if (snapshot.exists) {
@@ -32,7 +32,7 @@ const OtherProfileScreen = (props) => {
             
         firebase.firestore()
             .collection("posts")
-            .doc(route?.params?.uid)
+            .doc(route.params?.uid)
             .collection("userPosts")
             .orderBy("creation", "asc")
             .get()
@@ -44,13 +44,13 @@ const OtherProfileScreen = (props) => {
                 })
                 setUserPosts(posts)
             })
-    }, [route?.params?.uid, props?.following])
+    }, [route.params?.uid, props?.following])
 
     return (
         <SafeAreaView style={styles.container}>
             <HeaderSearch withGoBack={true} name={user?.name}  />
             <Info user={user} checkFollowing={props?.following} postsQuantity={userPosts.length} />
-            <ListPost userPosts={userPosts} />
+            <ListPost userPosts={userPosts} ownId={route.params?.uid} />
         </SafeAreaView>
     )
 };

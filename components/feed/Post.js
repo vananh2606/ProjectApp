@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Dimensions, Pressable } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import IonicIcon from 'react-native-vector-icons/Ionicons';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
+import { formatRelative, formatDistance } from 'date-fns';
+import { vi } from 'date-fns/locale';
 import firebase from 'firebase';
 
 const PostHeader = ({ post }) => {
     const navigation = useNavigation();
-    console.log('post: ', post)
+
+    const deletePost = () => {
+        firebase.firestore()
+            .collection("posts")
+            .doc(firebase.auth().currentUser.uid)
+            .collection("userPosts")
+            .doc(post?.id)
+            .delete();
+    };
+
     return (
         <View style={{
             flexDirection: 'row',
@@ -29,63 +39,34 @@ const PostHeader = ({ post }) => {
                 </Pressable>
             </View>
 
-            <EntypoIcon
-                name='dots-three-horizontal'
-                size={16}
-                color='#000'
-            // onPress={() => navigation.push('NewPost')}
-            />
+            {post?.user?.uid === firebase.auth().currentUser.uid &&
+                <IonicIcon
+                    name='close'
+                    size={16}
+                    color='#000'
+                    onPress={() => deletePost()}
+                />
+            }
         </View>
     )
 };
 
 const PostImage = ({ post }) => {
-    // const [currentImg, setCurrentImg] = useState(1)
-    // const [enableQuantityImg, setEnableQuantityImg] = useState(true)
     const windowWidth = Dimensions.get('window').width;
-
-    // useEffect(() => {
-    //     const toggleQuantityImg = setInterval(() => {
-    //         if (enableQuantityImg) setEnableQuantityImg(false)
-    //     }, 5000)
-
-    //     return () => clearInterval(toggleQuantityImg)
-    // }, [])
+    const navigation = useNavigation();
 
     return (
-        <View>
-            {/* <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                decelerationRate={0}
-                snapToInterval={windowWidth}
-                onMomentumScrollEnd={e => {
-                    setCurrentImg(Math.round(e.nativeEvent.contentOffset.x / windowWidth) + 1)
-                    setEnableQuantityImg(true)
-                }}>
-                {post.images.map((image, index) => (
-                    <View key={index} style={{ width: windowWidth, height: windowWidth }}>
-                        <Image
-                            style={{ height: '100%', resizeMode: 'contain' }}
-                            source={{ uri: image }}
-                        />
-                    </View>
-                ))}
-            </ScrollView>
-
-            {enableQuantityImg &&
-                <View style={styles.quantityImg}>
-                    <Text style={{ color: '#fff', fontSize: 12 }}>{currentImg}/{post?.images.length}</Text>
-                </View>
-            } */}
-
-            <View style={{ width: windowWidth, height: windowWidth }}>
-                <Image
-                    style={{ height: '100%', resizeMode: 'contain' }}
-                    source={{ uri: post.downloadURL }}
-                />
-            </View>
-        </View>
+        <Pressable 
+        style={{ width: windowWidth, height: windowWidth }}
+        onPress={() => navigation.navigate('Img', {
+            imgUri: post?.downloadURL
+        })}
+        >
+            <Image
+                style={{ height: '100%', resizeMode: 'cover' }}
+                source={{ uri: post?.downloadURL }}
+            />
+        </Pressable>
     )
 };
 
@@ -123,16 +104,16 @@ const PostFooter = ({ post, currentId }) => {
                 .then(res => setReset(!reset))
             if (uid !== firebase.auth().currentUser.uid) {
                 firebase.firestore()
-                .collection("users")
-                .doc(route.params?.uid)
-                .collection('notifications')
-                .add({
-                    creator: firebase.auth().currentUser.uid,
-                    type: 'like',
-                    checked: false,
-                    postId: post?.id,
-                    createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
-                });
+                    .collection("users")
+                    .doc(route.params?.uid)
+                    .collection('notifications')
+                    .add({
+                        creator: firebase.auth().currentUser.uid,
+                        type: 'like',
+                        checked: false,
+                        postId: post?.id,
+                        createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
+                    });
             };
         } else {
             firebase.firestore()
@@ -146,6 +127,22 @@ const PostFooter = ({ post, currentId }) => {
                 .then(res => setReset(!reset));
         };
 
+    };
+
+    const formatDate = seconds => {
+        let formattedDate = '';
+        let now = new Date();
+        let createAt = new Date(seconds * 1000);
+
+        if (seconds) {
+            if (now - createAt < 259200000) {
+                formattedDate = formatDistance(createAt, now, { addSuffix: true, locale: vi });
+            } else {
+                formattedDate = formatRelative(createAt, now, { locale: vi });
+            };
+        };
+        formattedDate = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+        return formattedDate;
     };
 
     return (
@@ -211,6 +208,8 @@ const PostFooter = ({ post, currentId }) => {
                 >
                     Xem tất cả bình luận
                 </Text>
+
+                <Text>{formatDate(post?.creation?.seconds)}</Text>
             </View>
         </View>
     )
