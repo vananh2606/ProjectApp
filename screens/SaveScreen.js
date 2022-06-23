@@ -3,7 +3,6 @@ import { TextInput, StyleSheet, Button, Image } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from '@react-navigation/native';
 
-import Header from '../components/newPost/Header';
 import firebase from 'firebase';
 require("firebase/firestore")
 require("firebase/firebase-storage")
