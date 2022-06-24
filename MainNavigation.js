@@ -115,10 +115,16 @@ const Main = (props) => {
             <Tab.Screen name="Notifi" component={NotifiScreen}
                 options={{
                     tabBarIcon: ({ color, size }) => (
-                        <MaterialCommuntiyIcons name="heart-outline" color={color} size={26} />
+                        <MaterialCommuntiyIcons name="heart" color={color} size={26} />
                     ),
                 }} />
             <Tab.Screen name="SearchStack" component={SearchStack}
+                listeners={({ navigation }) => ({
+                    tabPress: event => {
+                        event.preventDefault();
+                        navigation.navigate("SearchStack", {screen: 'Search', params: { selected: 0 }});
+                    }
+                })}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommuntiyIcons name="magnify" color={color} size={26} />
@@ -158,6 +164,7 @@ const mapStateToProps = (store) => ({
     chats: store.userState.chats,
     friendsRequestsReceived: store.userState.friendsRequestsReceived,
 });
+
 const mapDispatchProps = (dispatch) => bindActionCreators({ reload }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchProps)(Main);

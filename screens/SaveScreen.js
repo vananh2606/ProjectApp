@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TextInput, StyleSheet, Button, Image } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from '@react-navigation/native';
-
+import HeaderSave from '../components/header/HeaderSave';
 import firebase from 'firebase';
 require("firebase/firestore")
 require("firebase/firebase-storage")
@@ -53,12 +53,13 @@ const Save = (props) => {
                 caption,
                 creation: firebase.firestore.FieldValue.serverTimestamp()
             }).then((function () {
-                props.navigation.popToTop()
+                navigation.navigate("FeedStack");
             }))
     }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            <HeaderSave />
             <Image source={{ uri: props.route.params.image }} />
             <TextInput
                 placeholder='Write a Caption ...'

@@ -2,9 +2,9 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import firebase from 'firebase';
 import React, { useEffect, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import { Divider } from 'react-native-paper';
+import { Divider, Searchbar } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUsersData } from '../../redux/actions/index';
@@ -16,6 +16,7 @@ require('firebase/firestore');
 
 const List = (props) => {
     const [chats, setChats] = useState([]);
+    // const [search, setSearch] = useState('');
     const [input, setInput] = useState("");
     const [textInput, setTextInput] = useState(null);
     const navigation = useNavigation();
@@ -40,6 +41,7 @@ const List = (props) => {
                 props.chats[i].otherUser = user
             }
         }
+        // setChats(props.chats?.filter(chat => chat?.otherUser?.name?.include(search)))
         setChats(props.chats)
     }, [props.chats, props.users])
 
@@ -151,80 +153,92 @@ const List = (props) => {
 
             <Divider />
             {chats.length !== 0 ?
-                <FlatList
-                    numColumns={1}
-                    horizontal={false}
-                    data={chats}
-                    keyExtractor={(item, index) => item?.id}
-                    renderItem={({ item }) => (
+                <>
+                    {/* <View style={{ marginBottom: 12, }}>
+                        <Searchbar
+                            placeholder='Tìm kiếm'
+                            onChangeText={text => setSearch(text)}
+                            style={styles.inputSearch}
+                            underlineColor='#ffffff'
+                            activeUnderlineColor='#ffffff'
+                        />
+                    </View> */}
 
-                        <View style={!item[firebase.auth().currentUser.uid] ? { backgroundColor: '#d2eeff' } : null}>
-                            {item?.otherUser == null ? (
-                                <FontAwesome5
-                                    style={[utils.profileImageSmall]}
-                                    name="user-circle" size={35} color="black" />
-                            )
-                                :
-                                (
-                                    <TouchableOpacity style={[utils.padding15, container.horizontal]}
-                                        activeOpacity={share ? 1 : 0}
-                                        onPress={() => {
-                                            if (!share) {
-                                                navigation.navigate("Chat", { user: item?.otherUser })
+                    <FlatList
+                        numColumns={1}
+                        horizontal={false}
+                        data={chats}
+                        keyExtractor={(item, index) => item?.id}
+                        renderItem={({ item }) => (
 
-                                            }
-                                        }}>
-                                        <View style={container.horizontal}>
-                                            {item?.otherUser.image == 'default' ? (
-                                                <FontAwesome5
-                                                    style={[utils.profileImageSmall]}
-                                                    name="user-circle" size={35} color="black" />
-                                            )
-                                                :
-                                                (
-                                                    <Image
+                            <View style={!item[firebase.auth().currentUser.uid] ? { backgroundColor: '#d2eeff' } : null}>
+                                {item?.otherUser == null ? (
+                                    <FontAwesome5
+                                        style={[utils.profileImageSmall]}
+                                        name="user-circle" size={35} color="black" />
+                                )
+                                    :
+                                    (
+                                        <TouchableOpacity style={[utils.padding15, container.horizontal]}
+                                            activeOpacity={share ? 1 : 0}
+                                            onPress={() => {
+                                                if (!share) {
+                                                    navigation.navigate("Chat", { user: item?.otherUser })
+
+                                                }
+                                            }}>
+                                            <View style={container.horizontal}>
+                                                {item?.otherUser.image == 'default' ? (
+                                                    <FontAwesome5
                                                         style={[utils.profileImageSmall]}
-                                                        source={{
-                                                            uri: item?.otherUser?.image
-                                                        }} />
-                                                )}
+                                                        name="user-circle" size={35} color="black" />
+                                                )
+                                                    :
+                                                    (
+                                                        <Image
+                                                            style={[utils.profileImageSmall]}
+                                                            source={{
+                                                                uri: item?.otherUser?.image
+                                                            }} />
+                                                    )}
 
 
-                                        </View>
+                                            </View>
 
-                                        <View>
-                                            <Text style={[text.bold]}>{item?.otherUser?.name}</Text>
+                                            <View>
+                                                <Text style={[text.bold]}>{item?.otherUser?.name}</Text>
 
-                                            <Text numberOfLines={1} ellipsizeMode='tail' style={[utils.margin15Right, utils.margin5Bottom, { paddingBottom: 10 }]}>
-                                                {item?.lastMessage} {" "}
-                                                {item?.lastMessageTimestamp == null ? (
+                                                <Text numberOfLines={1} ellipsizeMode='tail' style={[utils.margin15Right, utils.margin5Bottom, { paddingBottom: 10 }]}>
+                                                    {item?.lastMessage} {" "}
+                                                    {item?.lastMessageTimestamp == null ? (
 
-                                                    <Text style={[text.grey, text.small, utils.margin5Bottom]}>Now</Text>
-                                                ) : (
-                                                    <Text
-                                                        style={[text.grey, text.small, utils.margin5Bottom]}>
-                                                        {formatDate(item?.lastMessageTimestamp.seconds)}
-                                                    </Text>
-                                                )}
-                                            </Text>
-                                        </View>
+                                                        <Text style={[text.grey, text.small, utils.margin5Bottom]}>Now</Text>
+                                                    ) : (
+                                                        <Text
+                                                            style={[text.grey, text.small, utils.margin5Bottom]}>
+                                                            {formatDate(item?.lastMessageTimestamp.seconds)}
+                                                        </Text>
+                                                    )}
+                                                </Text>
+                                            </View>
 
-                                        {share ? <TouchableOpacity
-                                            style={[utils.buttonOutlined, utils.margin15Right, { backgroundColor: '#0095ff', marginLeft: 'auto', justifyContent: 'center' }]}
-                                            onPress={() => sendPost(item)}>
-                                            <Text style={[text.bold, { color: 'white', textAlign: 'center', textAlignVertical: 'center' }]}>Send</Text>
-                                        </TouchableOpacity> :
-                                            null}
+                                            {share ? <TouchableOpacity
+                                                style={[utils.buttonOutlined, utils.margin15Right, { backgroundColor: '#0095ff', marginLeft: 'auto', justifyContent: 'center' }]}
+                                                onPress={() => sendPost(item)}>
+                                                <Text style={[text.bold, { color: 'white', textAlign: 'center', textAlignVertical: 'center' }]}>Send</Text>
+                                            </TouchableOpacity> :
+                                                null}
 
 
 
-                                    </TouchableOpacity>
-                                )}
+                                        </TouchableOpacity>
+                                    )}
 
-                        </View>
+                            </View>
 
-                    )}
-                />
+                        )}
+                    />
+                </>
                 :
                 <View style={{ height: '100%', justifyContent: 'center', margin: 'auto' }}>
                     <FontAwesome5 style={{ alignSelf: 'center', marginBottom: 20 }} name="comments" size={40} color="black" />
@@ -232,8 +246,14 @@ const List = (props) => {
                 </View>
             }
         </View >
-    )
-}
+    );
+};
+
+const styles = StyleSheet.create({
+    inputSearch: {
+        height: 42,
+    }
+});
 
 const mapStateToProps = (store) => ({
     currentUser: store.userState.currentUser,

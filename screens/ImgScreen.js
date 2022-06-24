@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     },
     closeBtn: {
         position: 'absolute',
-        top: 12,
+        top: 62,
         right: 12
     }
 });

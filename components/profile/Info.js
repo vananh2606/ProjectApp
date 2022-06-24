@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
+import { View, Image, StyleSheet, Text, Pressable, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import firebase from 'firebase';
 
@@ -50,7 +50,7 @@ const Info = ({ user, checkFollowing, postsQuantity }) => {
                 createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
             });
     };
-
+    console.log('user: ', user)
     const onUnfollow = () => {
         firebase.firestore()
             .collection("following")
@@ -59,31 +59,44 @@ const Info = ({ user, checkFollowing, postsQuantity }) => {
             .doc(route.params?.uid)
             .delete();
     };
+    console.log('selected: ', route)
 
     return (
         <View style={styles.container}>
             <View style={styles.infoContainer}>
                 <View style={styles.avatarContainer}>
-                    <View>
-                        <Image style={styles.avatar} source={{ uri: "http://placeimg.com/640/480/food" }} />
-                        {/* <Pressable style={styles.addStory}>
-                            <Text style={{ color: '#fff', fontSize: 20, marginTop: -4 }}>+</Text>
-                        </Pressable> */}
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('Img', {
+                            imgUri: user?.image
+                        })}
+                    >
+                        <Image style={styles.avatar} source={{ uri: user?.image ?? "http://placeimg.com/640/480/food" }} />
+                    </TouchableOpacity>
+                    <View style={styles.addStory}>
+                        <Text style={{ color: '#fff', fontSize: 20, marginTop: -4 }}>+</Text>
                     </View>
                     <Text style={{ fontWeight: '700', marginBottom: 8 }}>{user?.name}</Text>
                 </View>
 
                 <View style={{ width: 250, flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, }}>
                     <View style={styles.statisticalContainer}>
-                        <Text style={{ fontWeight: '700', fontSize: 18 }}>{postsQuantity}</Text>
+                        <Text
+                            style={{ fontWeight: '700', fontSize: 18 }}
+                        >{postsQuantity}</Text>
                         <Text>Bài viết</Text>
                     </View>
                     <View style={styles.statisticalContainer}>
-                        <Text style={{ fontWeight: '700', fontSize: 18 }}>{followUsers.length}</Text>
+                        <Text
+                            style={{ fontWeight: '700', fontSize: 18 }}
+                            onPress={() => navigation.navigate('SearchStack', { screen: 'Search', params: { selected: 1 } })}
+                        >{followUsers.length}</Text>
                         <Text>Người theo dõi</Text>
                     </View>
                     <View style={styles.statisticalContainer}>
-                        <Text style={{ fontWeight: '700', fontSize: 18 }}>{checkFollowing.length}</Text>
+                        <Text
+                            style={{ fontWeight: '700', fontSize: 18 }}
+                            onPress={() => navigation.navigate('SearchStack', { screen: 'Search', params: { selected: 2 } })}
+                        >{checkFollowing.length}</Text>
                         <Text>Đang theo dõi</Text>
                     </View>
                 </View>
@@ -107,7 +120,13 @@ const Info = ({ user, checkFollowing, postsQuantity }) => {
 
                     <Pressable
                         style={[styles.button, { width: 180, marginBottom: 8 }]}
-                    // onPress={() => navigation.navigate('EditProfile')}
+                        onPress={() => navigation.navigate("Chat", {
+                            user: {
+                                name: user?.name,
+                                uid: route.params?.uid,
+                                email: user?.email
+                            }
+                        })}
                     >
                         <Text style={[styles.buttonText, { color: '#000000', }]}>Nhắn tin</Text>
                     </Pressable>
@@ -138,6 +157,16 @@ const styles = StyleSheet.create({
     avatarContainer: {
         width: 90,
         justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    addStory: {
+        width: 20,
+        height: 20,
+        position: 'absolute',
+        top: 67,
+        left: 65,
+        backgroundColor: 'blue',
+        borderRadius: 50,
         alignItems: 'center',
     },
     avatar: {

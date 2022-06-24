@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import IonicIcon from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -8,9 +8,11 @@ const Header = () => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity>
-                <Text>VAL</Text>
-            </TouchableOpacity>
+            <View>
+                <Image
+                    style={styles.logo}
+                    source={require('../../assets/VAL-logo.png')} />
+            </View>
 
             <TouchableOpacity style={{ flexDirection: 'row', width: 60, justifyContent: 'flex-end' }}>
                 <AntDesign
@@ -31,6 +33,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         marginHorizontal: 20,
+    },
+    logo: {
+        width: 60,
+        height: 60,
+        resizeMode: 'contain',
     },
 });
 

@@ -47,7 +47,7 @@ const EditArea = () => {
                         <View style={{ alignItems: 'center', paddingTop: 20 }}>
                             <Image
                                 style={styles.avatar}
-                                source={{ uri: "http://placeimg.com/640/480/food" }}
+                                source={{ uri: user?.image ?? "http://placeimg.com/640/480/food" }}
                             />
 
                             <Text style={{ fontWeight: '700', color: 'blue' }}>Thay đổi ảnh đại diện</Text>

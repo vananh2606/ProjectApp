@@ -62,7 +62,7 @@ const ListLikedScreen = props => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                     <Image
                         style={styles.story}
-                        source={{ uri: "http://placeimg.com/640/480/food" }}
+                        source={{ uri: item?.image ?? "http://placeimg.com/640/480/food" }}
                     />
                     <Pressable
                         onPress={() => {

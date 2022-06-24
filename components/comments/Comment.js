@@ -86,7 +86,7 @@ const Comment = ({ comment, reply, onSetTagText, postId, ownId }) => {
                 <Pressable>
                     <Image
                         style={styles.avatar}
-                        source={{ uri: "http://placeimg.com/640/480/food" }}
+                        source={{ uri: comment?.user?.image ?? "http://placeimg.com/640/480/food" }}
                     />
                 </Pressable>
 

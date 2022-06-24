@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, Pressable, Image, Text, StyleSheet, FlatList } from 'react-native';
 import { Searchbar } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import firebase from 'firebase';
 require('firebase/firestore');
 
 const ListSearch = ({ currentId, following }) => {
+    const route = useRoute();
     const [listUsers, setListUsers] = useState([]);
     const [followingUsers, setFollowingUsers] = useState([]);
     const [followUsers, setFollowUsers] = useState([]);
-    const [selectItem, setSelectItem] = useState(0);
+    const [selectItem, setSelectItem] = useState(route.params?.selected);
     const [search, setSearch] = useState('');
     const [reset, setReset] = useState(false);
     const navigation = useNavigation();
@@ -18,7 +19,6 @@ const ListSearch = ({ currentId, following }) => {
     useEffect(() => {
         firebase.firestore()
             .collection('users')
-            .where('name', '>=', search)
             .get()
             .then(snapshot => {
                 let users = snapshot.docs.map(doc => {
@@ -26,11 +26,13 @@ const ListSearch = ({ currentId, following }) => {
                     const id = doc.id;
                     return { id, ...data }
                 })
-                setListUsers(users.filter(user => user?.id !== currentId));
-                setFollowingUsers(users.filter(user => user?.id !== currentId && following.indexOf(user?.id) !== -1));
-                setFollowUsers(users.filter(user => user?.id !== currentId && following.indexOf(user?.id) === -1));
+
+                setListUsers(users.filter(user => user?.id !== currentId && user?.name?.search(search) !== -1));
+                setFollowingUsers(users.filter(user => user?.id !== currentId && following.indexOf(user?.id) !== -1 && user?.name?.search(search) !== -1));
+                setFollowUsers(users.filter(user => user?.id !== currentId && following.indexOf(user?.id) === -1 && user?.name?.search(search) !== -1));
             })
-    }, [search, reset]);
+    }, [search, reset, route.params?.selected]);
+    console.log('selected: ', route)
 
     const toggleFollow = (id) => {
         if (following.indexOf(id) !== -1) {
@@ -68,7 +70,7 @@ const ListSearch = ({ currentId, following }) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                     <Image
                         style={styles.story}
-                        source={{ uri: "http://placeimg.com/640/480/food" }}
+                        source={{ uri: item?.image ?? "http://placeimg.com/640/480/food" }}
                     />
                     <Pressable
                         onPress={() => navigation.navigate('OtherProfile', { uid: item?.id })}
@@ -178,8 +180,6 @@ const styles = StyleSheet.create({
         width: 35,
         height: 35,
         borderRadius: 50,
-        borderWidth: 1.6,
-        borderColor: '#ff8501',
     },
     button: {
         alignItems: 'center',

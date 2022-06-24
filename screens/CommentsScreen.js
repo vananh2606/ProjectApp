@@ -22,7 +22,7 @@ const CommentScreen = (props) => {
     useEffect(() => {
         setTagText('');
     }, []);
-
+    
     useEffect(() => {
         const unsubscribe = async () => {
             firebase.firestore()
@@ -54,7 +54,8 @@ const CommentScreen = (props) => {
                         setPost({
                             user: {
                                 name: route.params?.ownName,
-                                uid: route.params?.uid
+                                uid: route.params?.uid,
+                                image: props.currentUser?.image
                             },
                             text: snapshot.data()?.caption,
                             createAt: snapshot.data()?.creation?.seconds
@@ -68,7 +69,7 @@ const CommentScreen = (props) => {
 
         unsubscribe();
     }, [props.route.params.postId, props.users, rerender]);
-
+    console.log('route: ', props.currentUser)
     const matchUserToComment = comments => {
         for (let i = 0; i < comments.length; i++) {
             if (comments[i].hasOwnProperty('user')) continue;
@@ -80,97 +81,94 @@ const CommentScreen = (props) => {
     };
 
     const renderItem = ({ item }) => {
-        const swipeoutBtns = [
-            {
-                text: 'Delete',
-                type: 'delete',
-                onPress: () => {
-                    Alert.alert(
-                        'Thông báo',
-                        'Bạn muốn xoá bình luận này?',
-                        [
-                            { text: 'Không', onPress: () => console.log('Cancel!'), style: 'cancel' },
-                            {
-                                text: 'Có', onPress: () => {
-                                    firebase.firestore()
-                                        .collection('posts')
-                                        .doc(route.params?.uid)
-                                        .collection('userPosts')
-                                        .doc(route.params?.postId)
-                                        .collection('comments')
-                                        .doc(item?.id)
-                                        .delete()
-                                        .then(res => setRerender(!rerender));
+        const swipeoutSetting = {
+            autoClose: true,
+            right: [
+                {
+                    text: 'Delete',
+                    type: 'delete',
+                    onPress: () => {
+                        Alert.alert(
+                            'Thông báo',
+                            'Bạn muốn xoá bình luận này?',
+                            [
+                                { text: 'Không', onPress: () => console.log('Cancel!'), style: 'cancel' },
+                                {
+                                    text: 'Có', onPress: () => {
+                                        firebase.firestore()
+                                            .collection('posts')
+                                            .doc(route.params?.uid)
+                                            .collection('userPosts')
+                                            .doc(route.params?.postId)
+                                            .collection('comments')
+                                            .doc(item?.id)
+                                            .delete()
+                                            .then(res => setRerender(!rerender));
+                                    }
                                 }
-                            }
-                        ],
-                        { cancelable: true }
-                    )
+                            ],
+                            { cancelable: true }
+                        )
+                    }
                 }
-            }
-        ];
+            ]
+        };
 
-return (
-    <>
-        {(route.params?.uid === firebase.auth().currentUser.uid || item?.user?.uid === firebase.auth().currentUser.uid) ? (
-            <Swipeout right={swipeoutBtns} style={{ backgroundColor: '#ffffff' }}>
-                <Comment
-                    comment={item}
-                    reply={true}
-                    ownId={route.params?.uid}
-                    postId={route.params?.postId}
-                    onSetTagText={value => setTagText(value)}
-                />
-            </Swipeout>
-        ) : (
-            <Comment
-                comment={item}
-                reply={true}
-                ownId={route.params?.uid}
-                postId={route.params?.postId}
-                onSetTagText={value => setTagText(value)}
-            />
-        )}
-    </>
-);
-        // return (
-        //     <Comment
-        //         comment={item}
-        //         reply={true}
-        //         ownId={route.params?.uid}
-        //         postId={route.params?.postId}
-        //         onSetTagText={value => setTagText(value)}
-        //     />
-        // )
+        return (
+            <>
+                {(route.params?.uid === firebase.auth().currentUser.uid || item?.user?.uid === firebase.auth().currentUser.uid) ? (
+                    <Swipeout
+                        {...swipeoutSetting}
+                        style={{ backgroundColor: '#ffffff' }}
+                    >
+                        <Comment
+                            comment={item}
+                            reply={true}
+                            ownId={route.params?.uid}
+                            postId={route.params?.postId}
+                            onSetTagText={value => setTagText(value)}
+                        />
+                    </Swipeout>
+                ) : (
+                    <Comment
+                        comment={item}
+                        reply={true}
+                        ownId={route.params?.uid}
+                        postId={route.params?.postId}
+                        onSetTagText={value => setTagText(value)}
+                    />
+                )}
+            </>
+        );
     };
 
-const caption = () => {
-    return <Comment
-        comment={post}
-        reply={false}
-        ownId={route.params?.uid}
-    />
-};
+    const caption = () => {
+        return <Comment
+            comment={post}
+            reply={false}
+            ownId={route.params?.uid}
+        />
+    };
 
-return (
-    <SafeAreaView style={styles.container}>
-        <HeaderCmt />
-        <FlatList
-            data={comments}
-            renderItem={renderItem}
-            keyExtractor={(comment, index) => index}
-            ListHeaderComponent={caption}
-            showsVerticalScrollIndicator={false}
-        />
-        <WriteComment
-            avatar={"http://placeimg.com/640/480/food"}
-            uid={props.route.params?.uid}
-            postId={props.route.params?.postId}
-            rerender={() => setRerender(!rerender)}
-            tagText={tagText}
-        />
-    </SafeAreaView>
-);
+    return (
+        <SafeAreaView style={styles.container}>
+            <HeaderCmt />
+            <FlatList
+                data={comments}
+                renderItem={renderItem}
+                keyExtractor={(comment, index) => index}
+                ListHeaderComponent={caption}
+                showsVerticalScrollIndicator={false}
+            />
+            <WriteComment
+                avatar={props?.currentUser?.image ?? "http://placeimg.com/640/480/food"}
+                uid={props.route.params?.uid}
+                postId={props.route.params?.postId}
+                rerender={() => setRerender(!rerender)}
+                tagText={tagText}
+            />
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({

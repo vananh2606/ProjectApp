@@ -137,7 +137,6 @@ const SignupForm = () => {
 
 const styles = StyleSheet.create({
     wrapper: {
-        marginTop: 80,
         marginHorizontal: 12,
     },
     inputField: {
@@ -150,7 +149,7 @@ const styles = StyleSheet.create({
 
     },
     button: isValid => ({
-        backgroundColor: isValid ? '#663399' : '#9370DB',
+        backgroundColor: isValid ? '#009ACD' : '#87CEFF',
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: 42,

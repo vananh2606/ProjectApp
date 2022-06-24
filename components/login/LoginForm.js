@@ -16,7 +16,7 @@ const LoginForm = () => {
             .min(6, 'Mật khẩu phải có ít nhất 6 kí tự')
             .required('Mật khẩu là bắt buộc')
     });
-
+    firebase.auth().updateCurrentUser
     return (
         <View style={styles.wrapper}>
             <Formik
@@ -86,7 +86,7 @@ const LoginForm = () => {
                         </View>
 
                         <View style={{ alignItems: 'flex-end', marginBottom: 30 }}>
-                            <Text style={{ color: '#663399' }}>Quên mặt khẩu?</Text>
+                            <Text style={{ color: '#009ACD' }}>Quên mặt khẩu?</Text>
                         </View>
 
                         <Pressable
@@ -103,7 +103,7 @@ const LoginForm = () => {
                         <View style={styles.signupContainer}>
                             <Text>Bạn chưa có tài khoản? </Text>
                             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                                <Text style={{ color: '#663399' }}>Đăng ký</Text>
+                                <Text style={{ color: '#009ACD' }}>Đăng ký</Text>
                             </TouchableOpacity>
                         </View>
                     </KeyboardAvoidingView>
@@ -115,7 +115,6 @@ const LoginForm = () => {
 
 const styles = StyleSheet.create({
     wrapper: {
-        marginTop: 80,
         marginHorizontal: 12,
     },
     inputField: {
@@ -127,7 +126,7 @@ const styles = StyleSheet.create({
 
     },
     button: isValid => ({
-        backgroundColor: isValid ? '#663399' : '#9370DB',
+        backgroundColor: isValid ? '#009ACD' : '#87CEFF',
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: 42,

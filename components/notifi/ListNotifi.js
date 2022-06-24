@@ -6,7 +6,6 @@ import { vi } from 'date-fns/locale';
 import firebase from 'firebase';
 
 const ListNotifi = ({ notifi, rerender }) => {
-    const [reset, setReset] = useState(false);
     const windowWidth = Dimensions.get('window').width;
     const navigation = useNavigation();
 
@@ -38,16 +37,14 @@ const ListNotifi = ({ notifi, rerender }) => {
             .then(res => rerender());
     };
 
-    console.log(notifi)
-
     return (
-        <View style={{ paddingTop: 8, paddingHorizontal: 12, backgroundColor: `${notifi?.checked ? '#ffffff' : '#cccccc'}` }}>
+        <View style={{ paddingTop: 8, paddingHorizontal: 12, backgroundColor: `${notifi?.checked ? '#ffffff' : '#D1EEEE'}` }}>
             <View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
                     <View>
                         <Image
                             style={styles.avatar}
-                            source={{ uri: "http://placeimg.com/640/480/food" }}
+                            source={{ uri: notifi?.user?.image ?? "http://placeimg.com/640/480/food" }}
                         />
                     </View>
 

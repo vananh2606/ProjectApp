@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, Pressable } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, Pressable, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import IonicIcon from 'react-native-vector-icons/Ionicons';
 import { formatRelative, formatDistance } from 'date-fns';
@@ -10,12 +10,25 @@ const PostHeader = ({ post }) => {
     const navigation = useNavigation();
 
     const deletePost = () => {
-        firebase.firestore()
-            .collection("posts")
-            .doc(firebase.auth().currentUser.uid)
-            .collection("userPosts")
-            .doc(post?.id)
-            .delete();
+        Alert.alert(
+            'Thông báo',
+            'Bạn muốn xoá bài viết này?',
+            [
+                { text: 'Không', onPress: () => console.log('Cancel!'), style: 'cancel' },
+                {
+                    text: 'Có', onPress: () => {
+                        firebase.firestore()
+                            .collection("posts")
+                            .doc(firebase.auth().currentUser.uid)
+                            .collection("userPosts")
+                            .doc(post?.id)
+                            .delete()
+                            .then(res => navigation.goBack());
+                    }
+                }
+            ],
+            { cancelable: true }
+        );
     };
 
     return (
@@ -28,7 +41,7 @@ const PostHeader = ({ post }) => {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image
                     style={styles.story}
-                    source={{ uri: "http://placeimg.com/640/480/food" }}
+                    source={{ uri: post?.user?.image ?? "http://placeimg.com/640/480/food" }}
                 />
                 <Pressable
                     onPress={() => navigation.navigate('OtherProfile', { uid: post?.user?.uid })}
@@ -56,11 +69,11 @@ const PostImage = ({ post }) => {
     const navigation = useNavigation();
 
     return (
-        <Pressable 
-        style={{ width: windowWidth, height: windowWidth }}
-        onPress={() => navigation.navigate('Img', {
-            imgUri: post?.downloadURL
-        })}
+        <Pressable
+            style={{ width: windowWidth, height: windowWidth }}
+            onPress={() => navigation.navigate('Img', {
+                imgUri: post?.downloadURL
+            })}
         >
             <Image
                 style={{ height: '100%', resizeMode: 'cover' }}
@@ -241,8 +254,6 @@ const styles = StyleSheet.create({
         height: 35,
         borderRadius: 50,
         marginLeft: 6,
-        borderWidth: 1.6,
-        borderColor: '#ff8501',
     },
     quantityImg: {
         width: 32,

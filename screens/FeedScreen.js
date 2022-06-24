@@ -3,7 +3,7 @@ import { StyleSheet, FlatList } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { connect } from 'react-redux';
 import firebase from 'firebase';
-
+import Stories from '../components/feed/Stories'
 import Header from "../components/header/Header";
 import Post from '../components/feed/Post';
 
@@ -29,7 +29,9 @@ const Feed = (props) => {
     const renderItem = ({ item }) => {
         return <Post post={item} currentId={firebase.auth()?.currentUser?.uid} />
     };
-console.log('posts: ', posts)
+
+    // console.log('posts: ', posts)
+    
     return (
         <SafeAreaView style={styles.container}>
             <Header />
@@ -37,7 +39,7 @@ console.log('posts: ', posts)
                 data={posts}
                 renderItem={renderItem}
                 keyExtractor={(post, index) => index}
-                // ListHeaderComponent={Stories}
+                ListHeaderComponent={Stories}
                 showsVerticalScrollIndicator={false}
             />
         </SafeAreaView>
