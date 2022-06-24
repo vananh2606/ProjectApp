@@ -50,12 +50,11 @@ const CommentScreen = (props) => {
                 .get()
                 .then(snapshot => {
                     if (snapshot.exists) {
-                        let post = {};
                         setPost({
                             user: {
                                 name: route.params?.ownName,
                                 uid: route.params?.uid,
-                                image: props.currentUser?.image
+                                image: route.params?.image
                             },
                             text: snapshot.data()?.caption,
                             createAt: snapshot.data()?.creation?.seconds

@@ -7,7 +7,7 @@ export const stories = [
     },
     {
         "name": "bui chi cong",
-        "avatar": "https://firebasestorage.googleapis.com/v0/b/projectapp-a726a.appspot.com/o/profile%2FadddQdhZyEfddfxpsZNdH2IFG5o2?alt=media&token=415d0529-b719-44ec-b695-3cbe7159c3dd",
+        "avatar": "https://firebasestorage.googleapis.com/v0/b/projectapp-a726a.appspot.com/o/profile%2FadddQdhZyEfddfxpsZNdH2IFG5o2?alt=media&token=29ea074f-ae3f-436d-96e4-2cc3790c1be3",
         "image": "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_960_720.jpg",
         "id": "2"
     },

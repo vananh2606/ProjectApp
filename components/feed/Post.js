@@ -175,9 +175,10 @@ const PostFooter = ({ post, currentId }) => {
                         onPress={() =>
                             navigation.navigate('Comments',
                                 {
-                                    postId: post.id,
+                                    postId: post?.id,
                                     ownName: post?.user?.name,
-                                    uid: post.user.uid
+                                    uid: post?.user?.uid,
+                                    image: post?.user?.image
                                 }
                             )}
                     />
