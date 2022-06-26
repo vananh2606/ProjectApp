@@ -23,7 +23,7 @@ const Chat = (props) => {
     const [initialFetch, setInitialFetch] = useState(false)
     const route = useRoute();
     const navigation = useNavigation();
-    console.log(route.params.user)
+
     useEffect(() => {
         if (route.params?.notification) {
             firebase.firestore()

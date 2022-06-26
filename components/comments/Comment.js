@@ -31,8 +31,6 @@ const Comment = ({ comment, reply, onSetTagText, postId, ownId }) => {
         };
     }, [reset]);
 
-    console.log(comment)
-
     const formatDate = seconds => {
         let formattedDate = '';
         let now = new Date();

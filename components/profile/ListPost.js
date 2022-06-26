@@ -7,8 +7,6 @@ const ListPost = ({ userPosts, ownId }) => {
     const [selectIcon, setSelectIcon] = useState(true);
     const navigation = useNavigation();
 
-    console.log('userPosts: ', userPosts);
-
     const renderItem = ({ item }) => {
         return (
             <TouchableOpacity

@@ -50,7 +50,7 @@ const Info = ({ user, checkFollowing, postsQuantity }) => {
                 createAt: firebase.firestore.Timestamp.fromDate(new Date()).seconds
             });
     };
-    console.log('user: ', user)
+
     const onUnfollow = () => {
         firebase.firestore()
             .collection("following")
@@ -59,7 +59,6 @@ const Info = ({ user, checkFollowing, postsQuantity }) => {
             .doc(route.params?.uid)
             .delete();
     };
-    console.log('selected: ', route)
 
     return (
         <View style={styles.container}>
@@ -88,14 +87,14 @@ const Info = ({ user, checkFollowing, postsQuantity }) => {
                     <View style={styles.statisticalContainer}>
                         <Text
                             style={{ fontWeight: '700', fontSize: 18 }}
-                            onPress={() => navigation.navigate('SearchStack', { screen: 'Search', params: { selected: 1 } })}
+                            onPress={() => navigation.navigate('SearchStack')}
                         >{followUsers.length}</Text>
                         <Text>Người theo dõi</Text>
                     </View>
                     <View style={styles.statisticalContainer}>
                         <Text
                             style={{ fontWeight: '700', fontSize: 18 }}
-                            onPress={() => navigation.navigate('SearchStack', { screen: 'Search', params: { selected: 2 } })}
+                            onPress={() => navigation.navigate('SearchStack')}
                         >{checkFollowing.length}</Text>
                         <Text>Đang theo dõi</Text>
                     </View>

@@ -18,7 +18,7 @@ const Stories = () => {
                     >
                         <TouchableOpacity
                             onPress={() => navigation.navigate('Img', {
-                                imgUri: story.avatar
+                                imgUri: story.image
                             })}
                         >
                             <Image

@@ -68,7 +68,7 @@ const CommentScreen = (props) => {
 
         unsubscribe();
     }, [props.route.params.postId, props.users, rerender]);
-    console.log('route: ', props.currentUser)
+
     const matchUserToComment = comments => {
         for (let i = 0; i < comments.length; i++) {
             if (comments[i].hasOwnProperty('user')) continue;

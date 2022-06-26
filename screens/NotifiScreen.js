@@ -31,18 +31,6 @@ const NotifiScreen = (props) => {
         };
         unsubscribe();
     }, [reset]);
-    // console.log('noti:', notifies)
-    // const matchUserToNotifies = notifies => {
-    //     for (let i = 0; i < notifies.length; i++) {
-    //         if (notifies[i].hasOwnProperty('user')) continue;
-    //         const user = users.find(x => x.id === notifies[i].creator)
-    //         if (user === undefined) props.fetchUsersData(notifies[i].creator, false);
-    //         else notifies[i].user = user;
-    //     };
-    //     setNotifies(notifies);
-    // };
-
-    // console.log('props: ', users)
 
     const matchUserToNotifi = notifies => {
         for (let i = 0; i < notifies.length; i++) {

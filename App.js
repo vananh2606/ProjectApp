@@ -12,13 +12,12 @@ import 'firebase/firestore';
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBHab1xCK7Tn2yb-ngTEpX52o2j4S2HYUQ",
-  authDomain: "projectapp-a726a.firebaseapp.com",
-  projectId: "projectapp-a726a",
-  storageBucket: "projectapp-a726a.appspot.com",
-  messagingSenderId: "529723843929",
-  appId: "1:529723843929:web:62c659d9cfcea75cc71848",
-  measurementId: "G-0J1E374FJP"
+  apiKey: "AIzaSyC77GkcIli_DLV6aWz5_-lCglzwCd__0_s",
+  authDomain: "valapp-15f79.firebaseapp.com",
+  projectId: "valapp-15f79",
+  storageBucket: "valapp-15f79.appspot.com",
+  messagingSenderId: "74838849813",
+  appId: "1:74838849813:web:bccd59ba0fb6af0bfc111c"
 };
 
 if (firebase.apps.length === 0) {

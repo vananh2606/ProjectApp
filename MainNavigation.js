@@ -119,12 +119,6 @@ const Main = (props) => {
                     ),
                 }} />
             <Tab.Screen name="SearchStack" component={SearchStack}
-                listeners={({ navigation }) => ({
-                    tabPress: event => {
-                        event.preventDefault();
-                        navigation.navigate("SearchStack", {screen: 'Search', params: { selected: 0 }});
-                    }
-                })}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommuntiyIcons name="magnify" color={color} size={26} />

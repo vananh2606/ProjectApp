@@ -30,9 +30,6 @@ const EditArea = () => {
             });
     }, []);
 
-
-    console.log(user);
-
     const EditFormSchema = Yup.object().shape({
         username: Yup.string().required('Tên người dùng là bắt buộc').min(2, 'Tên người dùng phải có ít nhất 2 kí tự'),
         history: Yup.string('Tiểu sử không hợp lệ.'),

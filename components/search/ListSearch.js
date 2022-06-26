@@ -32,7 +32,6 @@ const ListSearch = ({ currentId, following }) => {
                 setFollowUsers(users.filter(user => user?.id !== currentId && following.indexOf(user?.id) === -1 && user?.name?.search(search) !== -1));
             })
     }, [search, reset, route.params?.selected]);
-    console.log('selected: ', route)
 
     const toggleFollow = (id) => {
         if (following.indexOf(id) !== -1) {

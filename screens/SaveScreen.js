@@ -8,7 +8,6 @@ require("firebase/firestore")
 require("firebase/firebase-storage")
 
 const Save = (props) => {
-    // console.log(props.route.params.image);
     const [caption, setCaption] = useState("");
     const navigation = useNavigation();
 
